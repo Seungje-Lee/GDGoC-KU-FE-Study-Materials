@@ -1,0 +1,22 @@
+# 의존성 — 각자 npm install 로 받습니다
+node_modules/
+
+# 빌드 산출물
+dist/
+.next/
+out/
+
+# 환경변수 (실제 값은 커밋하지 않습니다)
+.env
+.env.local
+.env*.local
+
+# OS / 에디터
+.DS_Store
+*.local
+.vscode/
+.idea/
+
+# 로그
+*.log
+npm-debug.log*
