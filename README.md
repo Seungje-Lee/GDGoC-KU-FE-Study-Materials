@@ -43,8 +43,10 @@
 | `week4-start/` | 3회차를 마친 상태. `npm run build` 로 만든 결과물을 **nginx로 서빙**하는 설정까지 들어 있습니다. | 4회차 |
 | `next-version/` | 4회차 결과물을 **Next.js로 옮긴 버전**. 같은 화면이 서버에서 만들어지면 무엇이 달라지는지 비교용으로 씁니다. | 4회차 후반 |
 | `mini-api/` | 단어 데이터를 주는 **미니 API 서버** (강사 제공, 의존성 0개). 2회차부터 앱과 함께 켜둡니다 — `node server.js` 한 줄이면 됩니다. | 2회차부터 |
+| `nginx/` | 3회차에 쓰는 **nginx 설정 파일 3종** (`nginx.conf` → `nginx-spa.conf` → `nginx-proxy.conf`). 단계별로 하나씩 얹습니다. | 3회차 |
+| `docker/` | 4회차에 쓰는 **`docker-compose.yml`**. 앱 컨테이너와 미니 API 컨테이너를 한 번에 띄웁니다. | 4회차 |
 
-> **폴더는 해당 회차에 맞춰 하나씩 공개됩니다.** 지금은 `week0-end/`, `week1-start/`, `mini-api/` 가 올라와 있습니다.
+> **폴더는 해당 회차에 맞춰 하나씩 공개됩니다.** 지금은 `week0-end/`, `week1-start/`, `week2-start/`, `mini-api/` 가 올라와 있습니다.
 > 위 표는 4주 전체 지도라고 보시면 됩니다.
 
 ---
@@ -81,7 +83,7 @@ npm run dev        # 개발 서버를 켭니다
 cd mini-api
 node server.js
 
-# 터미널 2 — 앱 (위와 동일)
+# 터미널 2 — 앱 (지난주 본인 프로젝트 폴더 또는 week2-start 에서)
 cd week2-start
 npm run dev
 ```
