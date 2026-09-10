@@ -11,7 +11,8 @@
 
 ## 1. 실행 방법
 
-세 가지 방법이 있습니다. **3회차에는 (A) 또는 (B)**, **4회차에는 (C)** 를 씁니다.
+세 가지 방법이 있습니다. **2회차에는 (A)**, **3회차에는 (A) 또는 (B)**, **4회차에는 (C)** 를 씁니다.
+2회차에는 Docker 가 필요 없습니다 — (A) 한 줄이면 됩니다.
 
 ### (A) node 로 직접 실행 — 가장 빠름
 
@@ -77,7 +78,7 @@ docker compose up --build
 
 | 메서드 | 경로 | 설명 | 응답 |
 | --- | --- | --- | --- |
-| GET | `/api/words` | 단어 목록 전체 | `200` 단어 객체 배열 (8개) |
+| GET | `/api/words` | 단어 목록 전체 | `200` 단어 객체 배열 (35개) |
 | GET | `/api/words/:word` | 단어 하나 조회 (대소문자 무시) | `200` 단어 객체 / `404` 에러 JSON |
 | GET | `/api/health` | 서버 상태 확인 | `200` `{"status":"ok"}` |
 | 그 외 | 아무 경로 | 존재하지 않는 경로 | `404` 에러 JSON |
@@ -88,11 +89,15 @@ docker compose up --build
 ```json
 {
   "word": "proxy",
+  "phonetic": "/ˈprɑːk.si/",
+  "partOfSpeech": "명사",
   "meaning": "대리인, 대리 / 요청을 대신 전달해 주는 중개 서버",
-  "partOfSpeech": "noun",
   "example": "The proxy forwards every request to the internal API server."
 }
 ```
+
+> `phonetic` 은 발음기호입니다. **없는 단어도 있습니다** — 빈 문자열로 옵니다.
+> 그래서 화면에서는 있을 때만 그려야 합니다 (1회차에 배운 조건부 렌더링).
 
 ### 터미널에서 확인해 보기
 
