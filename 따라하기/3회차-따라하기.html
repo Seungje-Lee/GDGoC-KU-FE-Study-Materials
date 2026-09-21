@@ -1227,8 +1227,11 @@ docker stop study-web      <span class="c"># 이전 실습 컨테이너가 남�
       </ul>
       <div class="cb"><div class="cb-h"><span class="f">지금 mini-api 가 떠 있는지 확인</span><button class="cp" type="button">복사</button></div>
 <pre>docker ps                  <span class="c"># NAMES 칸에 mini-api 가 보여야 합니다</span>
-docker logs mini-api
-docker logs study-web      <span class="c"># nginx 가 왜 죽었는지</span></pre></div>
+docker logs mini-api</pre></div>
+      <p><strong>nginx가 왜 죽었는지는 방금 실행한 그 터미널에 이미 찍혀 있습니다</strong> —
+      위로 스크롤해서 <code>[emerg]</code> 줄을 찾으세요.
+      (<code>--rm</code> 으로 띄웠기 때문에 죽은 컨테이너는 바로 지워져서
+      <code>docker logs study-web</code> 은 <code>No such container</code> 가 됩니다.)</p>
     </div>
   </details>
   <details>
