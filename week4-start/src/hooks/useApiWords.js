@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react'
 // ==================================================================
 // useApiWords — 미니 API 에서 추천 단어 목록을 가져오는 훅
 // ==================================================================
-// 3회차에서 붙인 미니 API(materials/실습코드/mini-api)를 호출합니다.
+// 3회차에서 붙인 미니 API(저장소의 mini-api/)를 호출합니다.
 //
-//   GET /api/words        단어 목록 전체 (8개)
+//   GET /api/words        단어 목록 전체 (35개)
 //   GET /api/words/:word  단어 하나
 //   GET /api/health       상태 확인
 //
