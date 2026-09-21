@@ -1162,7 +1162,7 @@ docker network rm study-net</pre>
   </div>
   <div class="box i">
     <span class="l">참고 — docker compose 로 하는 방법 (4회차와 같은 방식)</span>
-    <p>저장소의 <code>docker/</code> 폴더에 <code>docker-compose.yml</code> 이 준비돼 있습니다.
+    <p><code>docker-compose.yml</code> 로 두 컨테이너를 한 번에 띄울 수도 있습니다 (<code>docker/</code> 폴더 — <strong>4회차 자료와 함께 공개</strong>).
     이 방식에서는 두 컨테이너가 자동으로 같은 네트워크에 올라가고
     <strong>서비스 이름 <code>mini-api</code> 가 그대로 호스트 이름</strong>이 됩니다.
     다만 포트가 8080이 아니라 <strong>80</strong>(<code>http://localhost</code>)입니다.
@@ -1276,6 +1276,10 @@ ls dist                    <span class="c"># index.html, assets/ 가 보이는�
 
 docker exec study-web ls /usr/share/nginx/html
 docker exec study-web cat /etc/nginx/conf.d/default.conf</pre></div>
+      <p><strong>프로젝트에 <code>nginx.conf</code> 라는 “빈 폴더”가 생겨 있다면</strong> —
+      설정 파일을 복사하기 <em>전에</em> <code>docker run</code> 을 먼저 실행한 경우입니다.
+      Docker는 마운트 원본이 없으면 그 자리에 <strong>빈 폴더를 만들어 버립니다.</strong>
+      그 폴더를 지우고(<code>rm -rf nginx.conf</code>) <code>cp</code> 부터 다시 하세요.</p>
       <p>Windows에서 마운트가 <strong>빈 폴더로 보인다면</strong> Docker Desktop →
       Settings → Resources → File Sharing 설정을 확인하세요.
       급하면 짝꿍 노트북으로 진행하시는 게 빠릅니다.</p>
