@@ -445,6 +445,7 @@ for protocol schemes: http, data, isolated-app, https, ...</span>
    └────────────────────────────────────────┘</pre>
   </div>
   <p><code>http://localhost:3000</code> → <strong>앱이 뜹니다.</strong>
+  (3000이 이미 사용 중이면 serve가 <strong>말없이 다른 포트</strong>로 뜹니다 — <strong>터미널에 찍힌 주소</strong>를 여세요.)
   <code>Network</code> 주소를 같은 와이파이의 <strong>옆 사람 폰</strong>으로 열어보세요. 그것도 뜹니다.</p>
   <div class="box w">
     <span class="l">확인하고 넘어갈 것 — serve 는 개발 서버가 아닙니다</span>
@@ -536,13 +537,25 @@ fetch(<span class="st">`${API_BASE}/api/words`</span>)</pre>
   )
 }</pre>
   </div>
+  <div class="box e">
+    <span class="l">⚠️ 삼항식 “안”에 넣으면 빌드가 깨집니다</span>
+    <p><code>&lt;WordList /&gt;</code> 바로 아랫줄(= 삼항식 <em>안</em>)에 넣으면
+    <code>ERROR: Unexpected "&gt;"</code> 가 납니다 — 삼항식의 한 가지에는 <strong>표현식이 하나만</strong> 올 수 있습니다.
+    반드시 <code>)}</code> <strong>바깥</strong>에 넣으세요.</p>
+  </div>
   <div class="cb">
     <div class="cb-h"><span class="f">src/App.jsx — 두 줄만 추가합니다</span><button class="cp" type="button">복사</button></div>
 <pre><span class="c">// ① 맨 위 import 에 한 줄</span>
 <span class="kw">import</span> RecommendedWords <span class="kw">from</span> <span class="st">'./components/RecommendedWords.jsx'</span>
 
-<span class="c">// ② return 안, 목록 아래쯤에 한 줄</span>
-&lt;RecommendedWords /&gt;</pre>
+<span class="c">// ② return 안 — 목록을 감싸는 삼항식 블록이 "끝난 다음 줄"에</span>
+{words.length === 0 ? (
+  ...
+) : (
+  &lt;WordList words={words} onDelete={handleDelete} /&gt;
+)}                    <span class="good">← 이 닫는 중괄호 “바깥”,</span>
+
+<span class="good">&lt;RecommendedWords /&gt;</span>      <span class="good">← 여기에 넣습니다</span></pre>
   </div>
   <div class="box i">
     <span class="l">미니 API가 돌려주는 단어의 모양</span>
@@ -819,7 +832,9 @@ curl -I http://localhost:8080/about       <span class="c"># → HTTP/1.1 404 Not
     <em>가상의 주소</em>입니다. nginx는 그 사정을 모릅니다.</p>
     <p><strong>“개발 서버에서는 잘 됐는데 배포하니까 404가 난다”</strong>의 정체가 이것입니다.
     Vite 개발 서버가 이 처리를 <strong>대신 해주고 있었을 뿐</strong>입니다.
-    (<code>npx serve dist</code> 도 이걸 알아서 해줍니다. 그래서 <code>serve</code> 로는 이 실습이 안 됩니다.)</p>
+    (아까 쓴 <code>npx serve dist</code> 도 기본값은 지금의 nginx 1단계와 똑같이 404를 냅니다 —
+    <code>serve <strong>-s</strong> dist</code> 처럼 <code>-s</code> 옵션을 줘야 fallback을 해줍니다.
+    <em>도구마다 이 스위치가 숨어 있을 뿐, 원리는 오늘 우리가 직접 만드는 이것입니다.</em>)</p>
   </div>
 
   <div class="box i">
@@ -1118,7 +1133,7 @@ fetch(<span class="good">'/api/words'</span>)</pre>
   <div class="cb">
     <div class="cb-h"><span class="f">터미널</span><button class="cp" type="button">복사</button></div>
 <pre>curl -i http://localhost:8080/api/health   <span class="c"># {"status":"ok"}</span>
-curl -i http://localhost:8080/api/words    <span class="c"># 단어 JSON 8개</span></pre>
+curl -i http://localhost:8080/api/words    <span class="c"># 단어 JSON 35개</span></pre>
   </div>
   <div class="tw">
     <table>
