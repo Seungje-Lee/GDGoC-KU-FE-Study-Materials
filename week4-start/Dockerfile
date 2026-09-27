@@ -19,12 +19,9 @@
 #   이 파일(Dockerfile)과 nginx.conf 는 이미 앱 루트에 복사되어 있습니다.
 #   docker build 는 "빌드 컨텍스트(= 마지막 인자로 준 폴더)" 밖의 파일을
 #   COPY 할 수 없기 때문에, 필요한 파일은 전부 앱 루트에 있어야 합니다.
-#   (원본은 materials/실습코드/docker/Dockerfile.vite,
-#           materials/실습코드/nginx/nginx-proxy.conf 입니다)
+#   (원본은 저장소의 nginx/nginx-proxy.conf 입니다)
 #
-#   ⚠️ 빌드 전에 반드시 `npm install` 을 한 번 실행하세요.
-#      아래 npm ci 는 package-lock.json 이 있어야 동작합니다.
-#      시작 코드에는 lock 파일을 넣지 않았으므로 처음 한 번은 직접 만들어야 합니다.
+#   package-lock.json 은 시작 코드에 이미 들어 있으므로 아래 npm ci 가 바로 동작합니다.
 #
 # 빌드:  docker build -t my-vocab .
 # 실행:  docker run --rm -p 8080:80 --name my-vocab my-vocab

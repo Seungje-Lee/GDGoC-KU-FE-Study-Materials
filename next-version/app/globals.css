@@ -1,0 +1,324 @@
+/* ------------------------------------------------------------------
+   globals.css — 앱 전체 스타일 (파일 하나로 끝냅니다)
+
+   app/layout.js 에서 import './globals.css' 로 딱 한 번 불러옵니다.
+   Vite 버전의 index.css 와 카드 디자인을 최대한 비슷하게 맞췄습니다.
+
+   ★ 주의 (4회차 함정):
+     이 CSS 는 빌드되면 .next/static/ 아래에 해시가 붙은 파일로 들어갑니다.
+     Docker 로 배포할 때 .next/static 을 복사하지 않으면
+     페이지는 뜨는데 이 스타일이 전부 안 먹습니다. README 의 주의사항을 보세요.
+   ------------------------------------------------------------------ */
+
+:root {
+  --color-bg: #f4f5f7;
+  --color-card: #ffffff;
+  --color-text: #1f2430;
+  --color-muted: #6b7280;
+  --color-accent: #4f46e5;
+  --radius: 16px;
+  --gap: 20px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* 한글이 예쁘게 나오도록 운영체제별 한글 폰트를 순서대로 적어둡니다. */
+  font-family: system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  padding: 40px 20px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ---------- 페이지 머리말 ---------- */
+
+.page-header {
+  max-width: 1000px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.page-badge {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background-color: rgba(79, 70, 229, 0.1);
+  border-radius: 999px;
+  padding: 3px 12px;
+  margin-bottom: 10px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.page-footer {
+  max-width: 1000px;
+  margin: 48px auto 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+/* ---------- 안내 박스 (SSR 확인용) ---------- */
+
+.notice {
+  background-color: #eef2ff;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.notice-sub {
+  color: var(--color-muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.notice code {
+  background-color: rgba(79, 70, 229, 0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 13px;
+}
+
+/* ---------- 평문 목록 (curl / 소스 보기 확인용) ---------- */
+
+.plain-list {
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.plain-list h2,
+.plain-list h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.plain-list ul {
+  list-style: none;
+}
+
+.plain-list li {
+  font-size: 15px;
+  padding: 4px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.plain-list li:last-child {
+  border-bottom: none;
+}
+
+.plain-list a:hover {
+  color: var(--color-accent);
+}
+
+/* ---------- 카드 목록 ---------- */
+
+.card-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  justify-content: center;
+}
+
+.card-item {
+  flex: 1 1 280px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- 뒤집히는 카드 (FlipCard.js) ----------
+   앞면과 뒷면이 둘 다 HTML 안에 있고, CSS 로 회전시켜 한쪽만 보여줍니다.
+   그래서 curl 로 받아보면 뜻(뒷면)도 그대로 들어 있습니다. */
+
+.flip-card {
+  perspective: 1000px; /* 3D 원근감. 없으면 회전이 평면적으로 보입니다 */
+  height: 210px;
+}
+
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+
+  transform-style: preserve-3d; /* 자식들을 3D 공간에 배치 */
+  transition: transform 0.6s;
+}
+
+/* is-flipped 클래스는 FlipCard 의 useState 값에 따라 붙었다 떨어집니다. */
+.flip-card.is-flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden; /* 뒤통수는 안 보이게 */
+  -webkit-backface-visibility: hidden;
+
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+  background-color: #1f2430;
+  color: #f9fafb;
+}
+
+.flip-hint {
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.flip-back .flip-hint {
+  color: #9ca3af;
+}
+
+.card-word {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card-pron {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+/* 품사는 작은 알약 모양 배지 */
+.card-pos {
+  font-size: 12px;
+  color: var(--color-accent);
+  background-color: rgba(79, 70, 229, 0.1);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.card-meaning {
+  font-size: 16px;
+}
+
+.card-example {
+  font-size: 14px;
+  color: var(--color-muted);
+  font-style: italic;
+  border-left: 3px solid var(--color-accent);
+  padding-left: 10px;
+}
+
+.flip-back .card-example {
+  color: #d1d5db;
+}
+
+.detail-link {
+  font-size: 14px;
+  color: var(--color-accent);
+  text-align: right;
+}
+
+.detail-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 상세 페이지 ---------- */
+
+.breadcrumb {
+  font-size: 14px;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.detail {
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  margin-bottom: 24px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.detail-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.detail-word {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.detail-meaning {
+  font-size: 18px;
+}
+
+/* ---------- 반응형 ---------- */
+
+@media (max-width: 640px) {
+  .card-list {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-item {
+    max-width: 100%;
+  }
+}

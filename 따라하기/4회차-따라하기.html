@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4회차 따라하기 — 컨테이너와 Next.js · branch/FE</title>
+<style>
+/* ==========================================================
+   branch/FE 4회차 따라하기 — 수강생이 옆에 띄워두는 실습 문서
+   · 코드블록은 클릭 한 번으로 복사
+   · 체크박스 진도는 브라우저에 저장됩니다
+   ========================================================== */
+:root{
+  --bg:#f7f8fb; --panel:#ffffff; --panel-2:#eef1f7; --code-bg:#f2f4f9;
+  --line:rgba(18,24,40,.10); --line-strong:rgba(18,24,40,.20);
+  --fg:#141925; --fg-muted:#57607a; --fg-faint:#8a93ab;
+  --live:#0d8c80; --live-dim:rgba(13,140,128,.10); --live-line:rgba(13,140,128,.35);
+  --warn:#9a6a12; --warn-dim:rgba(214,158,46,.14);
+  --crit:#c0392f; --crit-dim:rgba(192,57,47,.09);
+  --deep:#4a5bd0; --deep-dim:rgba(74,91,208,.09);
+  --sans:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b0e15; --panel:#161b28; --panel-2:#1d2433; --code-bg:#11151f;
+  --line:rgba(226,232,255,.11); --line-strong:rgba(226,232,255,.22);
+  --fg:#e9edf7; --fg-muted:#9aa4bd; --fg-faint:#69738d;
+  --live:#33d6c6; --live-dim:rgba(51,214,198,.12); --live-line:rgba(51,214,198,.35);
+  --warn:#f4b13d; --warn-dim:rgba(244,177,61,.12);
+  --crit:#ff6b6b; --crit-dim:rgba(255,107,107,.11);
+  --deep:#8b9bff; --deep-dim:rgba(139,155,255,.12);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0e15; --panel:#161b28; --panel-2:#1d2433; --code-bg:#11151f;
+  --line:rgba(226,232,255,.11); --line-strong:rgba(226,232,255,.22);
+  --fg:#e9edf7; --fg-muted:#9aa4bd; --fg-faint:#69738d;
+  --live:#33d6c6; --live-dim:rgba(51,214,198,.12); --live-line:rgba(51,214,198,.35);
+  --warn:#f4b13d; --warn-dim:rgba(244,177,61,.12);
+  --crit:#ff6b6b; --crit-dim:rgba(255,107,107,.11);
+  --deep:#8b9bff; --deep-dim:rgba(139,155,255,.12);
+}
+:root[data-theme="light"]{
+  --bg:#f7f8fb; --panel:#ffffff; --panel-2:#eef1f7; --code-bg:#f2f4f9;
+  --line:rgba(18,24,40,.10); --line-strong:rgba(18,24,40,.20);
+  --fg:#141925; --fg-muted:#57607a; --fg-faint:#8a93ab;
+  --live:#0d8c80; --live-dim:rgba(13,140,128,.10); --live-line:rgba(13,140,128,.35);
+  --warn:#9a6a12; --warn-dim:rgba(214,158,46,.14);
+  --crit:#c0392f; --crit-dim:rgba(192,57,47,.09);
+  --deep:#4a5bd0; --deep-dim:rgba(74,91,208,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.7;
+  -webkit-font-smoothing:antialiased;font-size:16px}
+
+/* 상단 고정 바 */
+.top{position:sticky;top:0;z-index:30;background:var(--bg);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.top-in{max-width:54rem;margin:0 auto;padding:.7rem clamp(1rem,4vw,2rem);
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.top .name{font-weight:750;font-size:.95rem;white-space:nowrap}
+.top .name span{color:var(--live)}
+.prog{flex:1;min-width:8rem;height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--live);transition:width .25s}
+.top .cnt{font-family:var(--mono);font-size:.72rem;color:var(--fg-muted);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.top button{background:none;border:1px solid var(--line-strong);color:var(--fg-muted);
+  border-radius:999px;padding:.28rem .62rem;font-size:.7rem;font-family:var(--mono);cursor:pointer}
+.top button:hover{color:var(--live);border-color:var(--live-line)}
+.top button:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+
+.wrap{max-width:54rem;margin:0 auto;padding:2rem clamp(1rem,4vw,2rem) 6rem}
+
+.hero{padding:1.5rem 0 2rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+.kick{font-family:var(--mono);font-size:.72rem;letter-spacing:.15em;color:var(--live);text-transform:uppercase}
+h1{font-size:clamp(1.8rem,4.5vw,2.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-top:.6rem}
+.hero p{color:var(--fg-muted);margin-top:.8rem;max-width:44ch}
+
+h2{font-size:clamp(1.3rem,3vw,1.7rem);font-weight:750;letter-spacing:-.02em;
+  margin:3rem 0 .3rem;padding-bottom:.4rem;border-bottom:2px solid var(--live);display:inline-block;
+  scroll-margin-top:5rem}
+h3{font-size:1.1rem;font-weight:700;margin:2rem 0 .5rem;scroll-margin-top:5rem}
+h3 .t{font-family:var(--mono);font-size:.68rem;color:var(--fg-faint);
+  display:block;letter-spacing:.1em;margin-bottom:.15rem;font-weight:400}
+p{margin:.8rem 0;color:var(--fg-muted)}
+p.k{color:var(--fg)}
+strong{color:var(--fg);font-weight:700}
+em{font-style:normal;color:var(--live);font-weight:650}
+code{font-family:var(--mono);font-size:.88em;background:var(--panel-2);
+  padding:.1rem .35rem;border-radius:4px;color:var(--fg)}
+ul,ol{margin:.8rem 0 .8rem 1.2rem;color:var(--fg-muted)}
+li{margin:.35rem 0}
+li::marker{color:var(--fg-faint)}
+
+/* 코드블록 + 복사 */
+.cb{position:relative;margin:1rem 0;border:1px solid var(--line);border-radius:10px;
+  overflow:hidden;background:var(--code-bg)}
+.cb-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+  padding:.45rem .8rem;background:var(--panel-2);border-bottom:1px solid var(--line)}
+.cb-h .f{font-family:var(--mono);font-size:.7rem;color:var(--fg-muted)}
+.cb-h button{background:var(--panel);border:1px solid var(--line-strong);color:var(--fg-muted);
+  border-radius:6px;padding:.2rem .5rem;font-size:.66rem;font-family:var(--mono);cursor:pointer}
+.cb-h button:hover{color:var(--live);border-color:var(--live-line)}
+.cb-h button.ok{color:var(--live);border-color:var(--live-line)}
+.cb pre{overflow-x:auto;padding:.85rem 1rem;font-family:var(--mono);font-size:.83rem;line-height:1.65;color:var(--fg)}
+.cb .c{color:var(--fg-faint)}
+.cb .kw{color:var(--deep)}
+.cb .st{color:var(--live)}
+.cb .bad{color:var(--crit);font-weight:600}
+.cb .good{color:var(--warn);font-weight:600}
+
+/* 체크포인트 */
+.ck{margin:1.5rem 0;border:1px solid var(--live-line);background:var(--live-dim);border-radius:12px;padding:1rem 1.2rem}
+.ck .h{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--live);margin-bottom:.6rem;font-weight:600}
+.ck label{display:flex;gap:.6rem;align-items:flex-start;margin:.45rem 0;cursor:pointer;color:var(--fg)}
+.ck input{margin-top:.42rem;accent-color:var(--live);width:1rem;height:1rem;flex:0 0 auto;cursor:pointer}
+.ck input:checked + span{color:var(--fg-faint);text-decoration:line-through}
+
+/* 박스 */
+.box{border-left:3px solid var(--live);background:var(--live-dim);border-radius:0 10px 10px 0;
+  padding:.9rem 1.1rem;margin:1.1rem 0}
+.box.w{border-color:var(--warn);background:var(--warn-dim)}
+.box.e{border-color:var(--crit);background:var(--crit-dim)}
+.box.i{border-color:var(--deep);background:var(--deep-dim)}
+.box .l{display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fg-muted);margin-bottom:.3rem}
+.box p{margin:.3rem 0;color:var(--fg)}
+.box p:first-of-type{margin-top:0}
+
+/* 에러 해결 아코디언 */
+details{border:1px solid var(--line);border-radius:10px;margin:.6rem 0;background:var(--panel);overflow:hidden}
+details summary{cursor:pointer;padding:.7rem .9rem;font-weight:650;font-size:.94rem;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸ ";color:var(--crit);font-weight:700}
+details[open] summary::before{content:"▾ "}
+details[open] summary{border-bottom:1px solid var(--line);background:var(--panel-2)}
+details .body{padding:.8rem .9rem}
+details .body p{margin:.4rem 0}
+
+/* 표 */
+.tw{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:26rem;font-size:.9rem}
+th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg-muted);background:var(--panel-2)}
+tbody tr:last-child td{border-bottom:0}
+
+.done{margin-top:3rem;padding:1.4rem;border:2px dashed var(--live-line);border-radius:14px;
+  background:var(--live-dim);text-align:center}
+.done h3{margin:0 0 .4rem;font-size:1.2rem}
+.done p{margin:.3rem 0}
+
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);
+  font-size:.82rem;color:var(--fg-faint)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.top{position:static}details{break-inside:avoid}.cb-h button{display:none}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-in">
+    <span class="name">4회차 <span>컨테이너와 Next.js</span></span>
+    <div class="prog"><i id="pf"></i></div>
+    <span class="cnt"><b id="pd">0</b>/<span id="pt">0</span></span>
+    <button id="tb" type="button">테마</button>
+    <button id="rs" type="button">진도 초기화</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kick">2026. 10. 7 (수) · 3시간 · 마지막 회차 · 따라하기 문서</div>
+    <h1>컨테이너와 Next.js</h1>
+    <p>내 앱을 <strong>이미지로 구워서</strong> 어디서든 똑같이 뜨게 만들고,
+    <em>Vercel이 대신 해주던 일</em>이 무엇이었는지 하나씩 손으로 해봅니다.</p>
+    <div class="box i">
+      <span class="l">오늘의 태도 — 먼저 말씀드립니다</span>
+      <p>오늘 뒤쪽에서 Next.js와 Vercel 이야기를 합니다.
+      <strong>비판하려는 게 아닙니다. 훌륭한 도구이고 저도 씁니다.</strong>
+      다만 <strong>뚜껑을 한 번 열어보려는 것</strong>입니다.
+      열어본 다음 다시 닫고 Vercel을 쓰기로 하셨다면 그건 완전히 정당한 선택입니다 — 안 열어보고 쓰는 것과는 다릅니다.</p>
+    </div>
+    <div class="box w">
+      <span class="l">오늘은 이게 없으면 진행이 안 됩니다</span>
+      <p><strong>Docker Desktop이 실행 중이어야 합니다.</strong> 고래 아이콘이 안정될 때까지 기다린 다음 시작하세요.
+      막히면 30초 안에 손을 들어주세요.</p>
+    </div>
+  </div>
+
+  <!-- ===== 0. 시작 전 ===== -->
+  <h2 id="s0">0. 시작 전 확인</h2>
+  <p>터미널을 열고 아래를 한 줄씩 실행해 보세요.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — 오늘의 입장권</span><button class="cp" type="button">복사</button></div>
+<pre>docker --version
+docker ps
+docker run --rm hello-world</pre>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>명령</th><th>이렇게 나오면 정상</th></tr></thead>
+      <tbody>
+        <tr><td><code>docker --version</code></td><td>버전 숫자가 나온다 (예: <code>Docker version 27.x</code>)</td></tr>
+        <tr><td><code>docker ps</code></td><td>비어 있어도 됩니다. <strong>에러 없이 표의 머리글이 나오면</strong> 성공</td></tr>
+        <tr><td><code>docker run --rm hello-world</code></td><td><code>Hello from Docker!</code> 가 나온다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box w">
+    <span class="l">이미지를 미리 받아두면 실습이 훨씬 빠릅니다</span>
+    <p>현장에서 20명이 동시에 받으면 실습이 20분 밀립니다. 아직 안 받으셨다면 지금 실행하세요.</p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — 베이스 이미지 미리 받기</span><button class="cp" type="button">복사</button></div>
+<pre>docker pull node:20-alpine
+docker pull nginx:alpine</pre>
+  </div>
+  <div class="ck" data-ck="s0">
+    <div class="h">✅ 여기까지 확인</div>
+    <label><input type="checkbox"><span>Docker Desktop이 실행 중이다 (고래 아이콘이 안정됨)</span></label>
+    <label><input type="checkbox"><span><code>docker run --rm hello-world</code> 가 통과했다</span></label>
+    <label><input type="checkbox"><span>작업 폴더에서 <code>npm install</code> → <code>npm run build</code> 로 <code>dist/</code> 를 만들었다</span></label>
+    <label><input type="checkbox"><span><code>week4-start</code> 를 쓰는 분: 정답지를 <code>Dockerfile.answer</code> 로 치워뒀다</span></label>
+    <label><input type="checkbox"><span>8080 / 3000 / 3001 포트가 비어 있다</span></label>
+  </div>
+
+  <h3>작업 폴더 준비 — 2분</h3>
+  <p class="k">오늘은 <code>week4-start</code>(3회차 종착점)에서 진행합니다. 본인 프로젝트로 계속하셔도 됩니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — week4-start 폴더에서</span><button class="cp" type="button">복사</button></div>
+<pre>npm install
+npm run build
+
+mv Dockerfile Dockerfile.answer</pre>
+  </div>
+  <div class="box i">
+    <span class="l">이 두 가지를 먼저 하는 이유</span>
+    <p><strong><code>dist/</code> 를 먼저 만듭니다.</strong> 없는 상태로 <code>docker run -v .../dist:...</code> 를 하면
+    Docker가 그 자리에 <strong>빈 폴더</strong>를 만들어 버려서 <code>403 Forbidden</code> 이 뜹니다.
+    (3회차에 <code>nginx.conf</code> 로 똑같이 당한 그 함정입니다)</p>
+    <p><strong>정답지를 치워둡니다.</strong> <code>week4-start</code> 에는 오늘의 완성 Dockerfile 이
+    이미 들어 있습니다. 오늘은 그걸 <em>직접 써 보는 것</em>이 목표라서 빈 상태에서 시작합니다.
+    막히면 <code>Dockerfile.answer</code> 를 열어 비교하세요.</p>
+  </div>
+
+  <!-- ===== 1. docker run ===== -->
+  <h2 id="s1">1. <code>docker run</code> 첫 경험 — 지난주 그 명령어 해부하기</h2>
+  <p class="k">지난주에 아무 설명 없이 쳤던 명령어를 <strong>이제 조각으로 나눠서</strong> 직접 쳐봅니다.</p>
+
+  <h3><span class="t">19:20 · Step 1</span>가장 단순한 형태 — 일부러 실패해 봅니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 1</span><button class="cp" type="button">복사</button></div>
+<pre>docker run nginx:alpine</pre>
+  </div>
+  <p>터미널이 멈춘 것처럼 보입니다. nginx가 <strong>포그라운드에서 돌고 있는 것</strong>입니다. <strong>새 터미널</strong>을 열어 확인하세요.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 2</span><button class="cp" type="button">복사</button></div>
+<pre>docker ps</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">출력 — PORTS 컬럼을 보세요</span></div>
+<pre>CONTAINER ID   IMAGE          STATUS          PORTS      NAMES
+a1b2c3d4e5f6   nginx:alpine   Up 12 seconds   <span class="bad">80/tcp</span>     zealous_wilbur
+                                              <span class="bad">↑ 화살표가 없습니다</span></pre>
+  </div>
+  <div class="box e">
+    <span class="l">직접 확인해 보세요</span>
+    <p>브라우저에서 <code>http://localhost:80</code> → <strong>안 됩니다.</strong>
+    컨테이너 <strong>안</strong>에서는 80번이 열려 있는데, <strong>내 노트북에서는 들어갈 방법이 없습니다.</strong></p>
+  </div>
+
+  <h3><span class="t">Step 2</span>포트 연결 — 구멍을 뚫습니다</h3>
+  <p>터미널 1에서 <code>Ctrl+C</code> 로 끄고, 다시 실행합니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 1</span><button class="cp" type="button">복사</button></div>
+<pre>docker run --rm -p 8080:80 nginx:alpine</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">-p 옵션 읽는 법</span></div>
+<pre><span class="good">-p 8080:80</span>
+   <span class="c">│    └── 컨테이너 안의 포트</span>
+   <span class="c">└─────── 내 노트북의 포트</span></pre>
+  </div>
+  <p><code>http://localhost:8080</code> → <strong>nginx 기본 페이지가 뜹니다.</strong></p>
+  <div class="box i">
+    <span class="l">기억할 것</span>
+    <p>컨테이너는 <strong>자기만의 네트워크 공간</strong>을 가집니다. 기본적으로 바깥에서 못 들어옵니다.
+    <code>-p</code> 는 “내 노트북 8080으로 들어온 걸 저 컨테이너 80번으로 넘겨라”는 <strong>구멍을 뚫는 것</strong>입니다.
+    이 그림이 뒤에서 <strong>compose를 이해하는 밑돌</strong>이 됩니다.</p>
+  </div>
+
+  <h3><span class="t">Step 3</span>내 앱 파일 꽂아넣기 — 그리고 오늘의 문제</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — week4-start 폴더 안에서</span><button class="cp" type="button">복사</button></div>
+<pre>docker run --rm -p 8080:80 \
+  -v "$(pwd)/dist:/usr/share/nginx/html:ro" \
+  nginx:alpine</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">-v 옵션 읽는 법</span></div>
+<pre><span class="good">-v</span> "$(pwd)/dist : /usr/share/nginx/html : ro"
+      <span class="c">│              │                     └── read-only (읽기 전용)</span>
+      <span class="c">│              └── 컨테이너 안의 경로</span>
+      <span class="c">└── 내 노트북의 경로   ※ 복사가 아니라 "연결" 입니다</span></pre>
+  </div>
+  <div class="box e">
+    <span class="l">🤔 이 명령어를 옆 사람에게 그대로 보내면 될까요?</span>
+    <p>① 그 사람 컴퓨터에 <code>dist/</code> 가 없습니다 → 소스 받아서 <code>npm install</code> + <code>npm run build</code> 부터 해야 합니다</p>
+    <p>② <code>nginx.conf</code> 도 따로 줘야 합니다 &nbsp;·&nbsp; ③ 경로가 사람마다 다릅니다</p>
+    <p>④ 결국 <strong>“명령어 + 파일 3개 + 설명서”를 세트로</strong> 줘야 합니다</p>
+  </div>
+  <div class="box">
+    <span class="l">우리가 원하는 것</span>
+    <p><code>docker run 내앱</code> <strong>한 줄이면 끝나는 것.</strong>
+    그러려면 <code>dist/</code> 를 밖에서 꽂아넣는 게 아니라 <em>이미지 안에 넣어야</em> 합니다.
+    <strong>그게 Dockerfile입니다.</strong></p>
+  </div>
+
+  <!-- ===== 2. Dockerfile ===== -->
+  <h2 id="s2">2. Dockerfile 5줄 쓰기</h2>
+  <div class="box i">
+    <span class="l">한 번에 완성본을 복사하지 마세요</span>
+    <p><strong>3줄 → 빌드 → 5줄 → 빌드.</strong> 매 단계 빌드를 돌려서
+    <strong>레이어가 쌓이는 로그를 직접 보는 것</strong>이 이 시간의 목적입니다.</p>
+  </div>
+
+  <h3><span class="t">19:35 · Step 1</span>3줄로 시작</h3>
+  <p class="k">앱 프로젝트 루트에 <code>Dockerfile</code> 이라는 파일을 만듭니다. <strong>확장자는 없습니다.</strong></p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile  (새 파일 · 확장자 없음)</span><button class="cp" type="button">복사</button></div>
+<pre><span class="kw">FROM</span> nginx:alpine
+<span class="kw">COPY</span> dist/ /usr/share/nginx/html/
+<span class="kw">EXPOSE</span> 80</pre>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>명령</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td><code>FROM nginx:alpine</code></td><td><strong>바닥부터 만들지 않습니다.</strong> nginx가 이미 깔린 이미지 위에서 시작</td></tr>
+        <tr><td><code>COPY dist/ ...</code></td><td><strong><code>-v</code> 로 꽂는 대신 이미지 안에 복사해 넣습니다</strong> — 오늘의 전환점</td></tr>
+        <tr><td><code>EXPOSE 80</code></td><td>“이 이미지는 80번을 쓴다”는 <strong>문서화</strong>. 실제로 여는 건 <code>-p</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><span class="t">Step 2</span>설정까지 넣어서 5줄</h3>
+  <p class="k">3회차에 만든 nginx 설정도 이미지 안에 넣습니다.
+  지금은 컨테이너를 <strong>하나만</strong> 띄우므로 <code>nginx-solo.conf</code>
+  (SPA fallback + 캐시 헤더, 프록시 없음)를 씁니다 — 이유는 바로 아래에서 설명합니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile — 두 줄 추가</span><button class="cp" type="button">복사</button></div>
+<pre><span class="kw">FROM</span> nginx:alpine
+<span class="kw">COPY</span> dist/ /usr/share/nginx/html/
+<span class="good">COPY nginx-solo.conf /etc/nginx/conf.d/default.conf</span>
+<span class="kw">EXPOSE</span> 80
+<span class="good">CMD ["nginx", "-g", "daemon off;"]</span></pre>
+  </div>
+  <div class="box w">
+    <span class="l">daemon off; 가 왜 필요한가 — 오늘 가장 중요한 개념 중 하나</span>
+    <p><strong>컨테이너는 “1번 프로세스가 살아있는 동안” 살아있습니다.</strong>
+    nginx가 평소처럼 백그라운드(데몬)로 가버리면 1번 프로세스가 즉시 끝나고 <strong>컨테이너도 같이 죽습니다.</strong></p>
+    <p>그래서 컨테이너 안의 프로그램은 <strong>항상 포그라운드로</strong> 돌려야 합니다.
+    (<code>nginx:alpine</code> 에는 이미 이 <code>CMD</code> 가 들어 있어 생략해도 동작하지만,
+    적어두면 <em>왜 그런지 알고 쓰는 것</em>이 됩니다.)</p>
+  </div>
+
+  <!-- ===== 3. 빌드/실행 ===== -->
+  <h2 id="s3">3. 빌드하고 띄우기</h2>
+  <div class="box w">
+    <span class="l">⚠️ 빌드 전에 한 줄 — <code>.dockerignore</code> 의 <code>dist</code> 를 잠시 끕니다</span>
+    <p><code>.dockerignore</code> 에 <code>dist</code> 가 들어 있습니다. 무시된 파일은
+    <strong>애초에 Docker에게 전달되지 않아서</strong> 방금 쓴 <code>COPY dist/</code> 가
+    <code>"/dist": not found</code> 로 실패합니다. 그 줄 맨 앞에 <code>#</code> 을 붙이세요.</p>
+    <p><strong>4번 섹션(멀티스테이지)에서 다시 켭니다.</strong> 거기서는 컨테이너 안에서 직접 빌드하므로
+    내 <code>dist</code> 를 보낼 필요가 없습니다 — <em>그게 이 줄이 원래 있는 이유입니다.</em></p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">.dockerignore — dist 줄을 이렇게 바꿉니다</span><button class="cp" type="button">복사</button></div>
+<pre># dist</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — Dockerfile이 있는 폴더에서</span><button class="cp" type="button">복사</button></div>
+<pre>docker build -t word-app:v1 .
+docker run --rm -p 8080:80 --name web word-app:v1</pre>
+  </div>
+  <div class="box i">
+    <span class="l">설정 파일이 두 개인 이유 — <code>nginx-solo.conf</code> 와 <code>nginx.conf</code></span>
+    <p>방금 넣은 <code>nginx-solo.conf</code> 는 <strong>SPA fallback + 캐시 헤더</strong>만 있는 설정입니다 (3회차 2단계).</p>
+    <p>같은 폴더의 <code>nginx.conf</code> 는 3회차 <strong>3단계</strong> — <code>/api/</code> 를
+    <code>mini-api</code> 로 넘기는 리버스 프록시가 들어 있습니다. 그런데 <code>mini-api</code> 는
+    compose의 서비스 이름이라서, <strong>컨테이너 하나만 띄우는 지금 그 설정을 쓰면 nginx가 이름을 못 찾고 즉사합니다.</strong></p>
+    <p style="font-family:var(--mono);font-size:.85rem;color:var(--crit)">nginx: [emerg] host not found in upstream "mini-api"</p>
+    <p>그래서 <strong>7번 섹션에서 이 한 줄을 <code>nginx.conf</code> 로 갈아끼웁니다.</strong>
+    3회차에 설정을 1→2→3단계로 갈아끼운 것과 똑같습니다.</p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">명령어 읽는 법</span></div>
+<pre>docker build <span class="good">-t word-app:v1</span> <span class="good">.</span>
+             <span class="c">│                 └── 빌드 컨텍스트 (이 폴더를 Docker에게 넘긴다)</span>
+             <span class="c">└── 이미지에 이름:태그 를 붙인다</span></pre>
+  </div>
+  <p><code>http://localhost:8080</code> → <strong><code>-v</code> 없이 내 앱이 뜹니다.</strong>
+  <code>/about</code> 을 새로고침해도 404가 안 납니다. 설정까지 이미지 안에 들어갔기 때문입니다.</p>
+  <div class="box">
+    <span class="l">지금 이게 무슨 의미인지</span>
+    <p>방금 만든 이미지는 <strong>여러분 앱을 통째로 담고 있습니다.</strong>
+    이걸 이미지 저장소에 올리면 <strong>지구 반대편 서버가 <code>docker run 내앱</code> 한 줄로 똑같은 화면을 띄웁니다.</strong>
+    Node.js도, nginx 설치도, 빌드도 필요 없습니다. 이미 다 안에 들어 있으니까요.</p>
+  </div>
+
+  <h3>컨테이너 안으로 들어가 보기 — 꼭 해보세요</h3>
+  <p class="k">컨테이너는 마법이 아니라 <strong>작은 리눅스</strong>입니다. 들어가서 볼 수 있습니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 2 — 컨테이너가 떠 있는 상태에서</span><button class="cp" type="button">복사</button></div>
+<pre>docker exec -it web sh</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">컨테이너 안에서</span><button class="cp" type="button">복사</button></div>
+<pre>ls /usr/share/nginx/html
+cat /etc/nginx/conf.d/default.conf
+grep -o '/api/words' /usr/share/nginx/html/assets/*.js | head
+exit</pre>
+  </div>
+  <div class="box i">
+    <span class="l">마지막 grep 을 기억해 두세요</span>
+    <p>API 요청 경로가 <strong>이미 JS 파일 안에 문자열로 박혀 있습니다.</strong>
+    3회차에 확인한 그 사실입니다. <strong>6번 섹션에서 이걸 회수합니다.</strong></p>
+    <p><code>.dockerignore</code> 가 <code>.env</code> 를 제외하기 때문에
+    <strong>도커 빌드에는 내 <code>.env</code> 값이 아예 들어오지 않습니다.</strong>
+    그래서 지금 박힌 값은 코드의 기본값인 상대경로(<code>/api/words</code>)입니다.
+    6번 섹션에서 이 값을 <em>빌드 시점에</em> 갈아끼웁니다.</p>
+  </div>
+
+  <h3>자주 나는 에러</h3>
+  <details>
+    <summary>Cannot connect to the Docker daemon</summary>
+    <div class="body">
+      <p><strong>원인:</strong> Docker Desktop이 실행되지 않았습니다. 오늘 가장 흔한 1번 에러입니다.</p>
+      <p><strong>해결:</strong> Docker Desktop을 실행하고 <strong>고래 아이콘이 안정될 때까지</strong> 기다린 다음 다시 시도하세요.
+      (Docker는 백그라운드 데몬이 떠 있어야 CLI 명령이 동작합니다)</p>
+      <div class="cb"><div class="cb-h"><span class="f">확인</span></div>
+<pre>docker ps        <span class="c">← 에러 없이 표 머리글이 나오면 준비 완료</span></pre></div>
+    </div>
+  </details>
+  <details>
+    <summary>Bind for 0.0.0.0:8080 failed: port is already allocated</summary>
+    <div class="body">
+      <p><strong>원인:</strong> 그 포트를 이미 다른 프로그램이나 컨테이너가 쓰고 있습니다.</p>
+      <p><strong>해결 두 가지</strong> — 왼쪽(호스트) 숫자만 바꾸거나, 쓰고 있는 컨테이너를 정리합니다.</p>
+      <div class="cb"><div class="cb-h"><span class="f">고치는 법</span><button class="cp" type="button">복사</button></div>
+<pre>docker run --rm <span class="good">-p 8081:80</span> word-app:v1   <span class="good">← 왼쪽만 바꾼다</span>
+
+docker ps                <span class="c"># 누가 쓰는지 확인</span>
+docker stop &lt;이름&gt;        <span class="c"># 정지</span></pre></div>
+      <p><code>-p</code> 의 <strong>오른쪽(컨테이너 안 포트)은 바꾸면 안 됩니다.</strong> nginx는 80을 듣고 있으니까요.</p>
+    </div>
+  </details>
+  <details>
+    <summary>failed to solve: "/dist": not found</summary>
+    <div class="body">
+      <p><strong>원인 1:</strong> <code>docker build</code> 를 <strong>엉뚱한 폴더에서</strong> 쳤습니다.
+      마지막 <code>.</code> 이 빌드 컨텍스트입니다. <code>Dockerfile</code> 이 있는 폴더에서 치세요.</p>
+      <p><strong>원인 2:</strong> <code>.dockerignore</code> 에 <code>dist</code> 가 들어 있습니다.
+      무시된 파일은 <strong>애초에 Docker에게 전달되지 않아서</strong> <code>COPY</code> 가 실패합니다.
+      (3번 섹션에서는 <code>dist</code> 줄을 잠시 주석 처리하세요. 4번 섹션 멀티스테이지로 넘어가면 다시 켜면 됩니다)</p>
+    </div>
+  </details>
+  <details>
+    <summary>컨테이너가 뜨자마자 바로 종료됩니다</summary>
+    <div class="body">
+      <p><strong>원인:</strong> 1번 프로세스가 끝났습니다. 컨테이너는 그 순간 같이 죽습니다.</p>
+      <p><strong>진단은 항상 로그부터:</strong></p>
+      <div class="cb"><div class="cb-h"><span class="f">디버깅 1순위</span><button class="cp" type="button">복사</button></div>
+<pre>docker ps -a          <span class="c"># 죽은 컨테이너까지 보기</span>
+docker logs &lt;이름&gt;     <span class="c"># 무슨 말을 남기고 죽었는지</span></pre></div>
+      <p><strong>오늘 이 증상의 1순위 원인은 nginx 설정입니다.</strong> 로그에 이 줄이 보이면
+      <code>nginx.conf</code>(프록시 버전)를 넣고 컨테이너를 <strong>혼자</strong> 띄운 것입니다.</p>
+      <p style="font-family:var(--mono);font-size:.85rem;color:var(--crit)">nginx: [emerg] host not found in upstream "mini-api"</p>
+      <p>Dockerfile 의 <code>COPY</code> 줄을 <code>nginx-solo.conf</code> 로 바꿔 다시 빌드하세요.
+      <code>mini-api</code> 는 7번 섹션 compose에서 등장합니다.</p>
+      <p>그 줄이 아니라면 — nginx는 <code>daemon off;</code>, Node면 <code>listen</code> 누락을 의심하세요.
+      <code>--rm</code> 으로 띄운 컨테이너는 죽는 순간 지워져 <code>docker logs</code> 가 안 되므로,
+      <strong>실행한 터미널의 로그를 위로 스크롤해서</strong> 보세요.</p>
+    </div>
+  </details>
+  <div class="ck" data-ck="s3">
+    <div class="h">✅ 체크포인트 1 — 기초 파트 완료 (20:10)</div>
+    <label><input type="checkbox"><span><code>docker build</code> 가 에러 없이 끝났다</span></label>
+    <label><input type="checkbox"><span><code>-v</code> 없이 <code>docker run</code> 만으로 내 앱이 <code>localhost:8080</code> 에 뜬다</span></label>
+    <label><input type="checkbox"><span><code>docker images</code> 에 내 이미지가 보인다</span></label>
+    <label><input type="checkbox"><span><code>docker exec -it web sh</code> 로 컨테이너 안에 들어가 봤다</span></label>
+  </div>
+  <div class="box w">
+    <span class="l">10분 휴식 — 지금이 마지막 구조 시점입니다</span>
+    <p>안 되시는 분은 <strong>지금 손을 들어주세요.</strong> 빌드가 계속 실패하면
+    완성 이미지 파일을 드립니다 (<code>docker load -i word-app.tar</code>). 이후 구간을 그걸로 따라오실 수 있습니다.</p>
+  </div>
+
+  <!-- ===== 4. 멀티스테이지 ===== -->
+  <h2 id="s4">4. 멀티스테이지로 개선하기</h2>
+  <p class="k">지금 Dockerfile은 <code>COPY dist/</code> 로 시작합니다. <strong>그럼 <code>dist/</code> 는 누가 만들죠?</strong>
+  내가 미리 <code>npm run build</code> 를 해야 합니다. 즉 이 이미지는 <strong>아직 “완결”되지 않았습니다.</strong></p>
+
+  <h3><span class="t">20:20 · Step 1</span>순진한 시도 — 일부러 먼저 해봅니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile.fat — 동작은 합니다. 하지만…</span><button class="cp" type="button">복사</button></div>
+<pre><span class="kw">FROM</span> node:20-alpine
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> npm ci
+<span class="kw">RUN</span> npm run build
+<span class="kw">EXPOSE</span> 4173
+<span class="kw">CMD</span> ["npm", "run", "preview", "--", "--host", "0.0.0.0"]</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널</span><button class="cp" type="button">복사</button></div>
+<pre>docker build -f Dockerfile.fat -t word-app:fat .
+docker images | grep word-app</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">출력</span></div>
+<pre>word-app   <span class="bad">fat</span>   8f2a1c0d9b3e   30 seconds ago   <span class="bad">275MB</span>   <span class="bad">← !!</span>
+word-app   v1    3c9e7f1a2d84   5 minutes ago    93.2MB</pre>
+  </div>
+  <div class="box e">
+    <span class="l">275MB — 그런데 사용자에게 실제로 전달되는 건?</span>
+    <p><code>dist/</code> 폴더, <strong>150KB짜리입니다.</strong> 나머지는 전부 <strong>빌드에만 필요했던 것</strong>입니다.</p>
+    <p>Node 런타임 · <code>node_modules</code> · <strong>소스코드 전체</strong> · Vite·TypeScript 같은 빌드 도구.</p>
+    <p><strong>크기만 문제가 아닙니다.</strong> 소스코드 전체와 <code>node_modules</code> 가
+    <strong>프로덕션 서버에 그대로 올라가 있습니다.</strong> 공격 표면이 그만큼 넓어집니다.</p>
+  </div>
+
+  <h3><span class="t">Step 2</span>해법 — 작업대는 버리고 결과물만 옮깁니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile — FROM 을 두 번 씁니다</span><button class="cp" type="button">복사</button></div>
+<pre><span class="c"># ---- 1단계: 빌드 (결과물만 남기고 통째로 버려집니다) ----</span>
+<span class="kw">FROM</span> node:20-alpine <span class="good">AS builder</span>
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="c"># package.json 을 먼저 복사하는 이유: 레이어 캐시</span>
+<span class="c"># 소스만 바뀌면 npm ci 를 다시 안 돌립니다</span>
+<span class="kw">COPY</span> package.json package-lock.json ./
+<span class="kw">RUN</span> npm ci
+
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> npm run build
+
+<span class="c"># ---- 2단계: 실행 (실제로 배포되는 것은 여기부터) ----</span>
+<span class="kw">FROM</span> nginx:alpine
+
+<span class="good">COPY --from=builder /app/dist/ /usr/share/nginx/html/</span>
+<span class="kw">COPY</span> nginx-solo.conf /etc/nginx/conf.d/default.conf
+
+<span class="kw">EXPOSE</span> 80
+<span class="kw">CMD</span> ["nginx", "-g", "daemon off;"]</pre>
+  </div>
+  <div class="box">
+    <span class="l">핵심 한 줄</span>
+    <p><code>COPY --from=builder</code> — 1단계에서 만든 <code>dist/</code> <strong>만</strong> 꺼내옵니다.</p>
+    <p>1단계의 Node.js도, <code>node_modules</code> 도, <strong>소스코드도 최종 이미지에 안 들어갑니다.</strong>
+    빌드용 작업대는 통째로 버려지고, <em>결과물만 새 이미지로 옮겨 담는 것</em>입니다.</p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널</span><button class="cp" type="button">복사</button></div>
+<pre>docker build -t word-app:v3 .</pre>
+  </div>
+
+  <h3>레이어 캐시 — 직접 확인해 보세요</h3>
+  <p class="k">소스코드를 <strong>한 줄만</strong> 고치고 다시 빌드해 보세요.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">빌드 로그에서 이 줄을 찾으세요</span></div>
+<pre>=&gt; <span class="good">CACHED [builder 3/6] RUN npm ci</span>      <span class="good">← 재사용됐습니다</span></pre>
+  </div>
+  <div class="box i">
+    <span class="l">왜 이렇게 순서를 잡나</span>
+    <p>Docker는 명령 한 줄마다 <strong>레이어</strong>로 캐시합니다. 어떤 줄의 입력이 바뀌면 <strong>그 줄부터 아래는 전부 다시</strong> 실행됩니다.</p>
+    <p><code>package.json</code> 만 먼저 복사해 두면, 패키지를 추가·삭제하지 않는 한 <code>npm ci</code> 결과가 그대로 재사용됩니다.
+    <strong>빌드가 2분에서 10초가 됩니다.</strong></p>
+    <p>순서를 바꿔서 <code>COPY . .</code> 를 먼저 하면? <strong>코드 한 글자만 고쳐도 매번 <code>npm ci</code> 를 다시 돕니다.</strong></p>
+  </div>
+
+  <!-- ===== 5. 용량 비교 ===== -->
+  <h2 id="s5">5. 용량 비교 — 오늘의 클라이맥스</h2>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널</span><button class="cp" type="button">복사</button></div>
+<pre>docker images | grep word-app</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">출력 — 이 두 줄을 나란히 보세요</span></div>
+<pre>word-app   <span class="good">v3</span>    7d1f3b8c5a92   10 seconds ago   <span class="good">93.2MB</span>   <span class="good">← 멀티스테이지</span>
+word-app   <span class="bad">fat</span>   8f2a1c0d9b3e   5 minutes ago    <span class="bad">275MB</span>    <span class="bad">← 단일 스테이지</span>
+word-app   v1    3c9e7f1a2d84   12 minutes ago   93.2MB   <span class="c">← dist 를 직접 넣은 것 (v3 와 거의 같습니다)</span></pre>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th>단일 스테이지 · 275MB</th><th>멀티스테이지 · 93.2MB</th></tr></thead>
+      <tbody>
+        <tr><td><strong>안에 든 것</strong></td><td>Node 런타임, <code>node_modules</code>, 소스코드 전체, 빌드 도구, <code>dist/</code></td><td>nginx, <code>dist/</code>(150KB), 내 <code>nginx.conf</code></td></tr>
+        <tr><td><strong>배포 비용</strong></td><td>서버 10대면 2.75GB를 옮긴다</td><td>서버 10대면 932MB</td></tr>
+        <tr><td><strong>보안</strong></td><td><strong>소스코드가 프로덕션에 올라가 있다</strong></td><td><strong>소스코드가 한 줄도 없다</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ck" data-ck="s5">
+    <div class="h">✅ 체크포인트 2 — 멀티스테이지 완료</div>
+    <label><input type="checkbox"><span><code>docker images</code> 에서 <strong>275MB → 93.2MB</strong> 를 직접 확인했다</span></label>
+    <label><input type="checkbox"><span>재빌드 로그에서 <code>CACHED ... RUN npm ci</code> 를 봤다</span></label>
+    <label><input type="checkbox"><span>멀티스테이지 이미지로 앱이 정상적으로 뜬다</span></label>
+  </div>
+
+  <!-- ===== 6. ARG ===== -->
+  <h2 id="s6">6. <code>ARG</code> 로 환경변수 주입 — 3회차 함정의 해법</h2>
+  <div class="box i">
+    <span class="l">지난주에 일부러 남겨둔 숙제입니다</span>
+    <p>3회차에 “<code>.env</code> 를 바꿀 때마다 재빌드해야 한다”를 확인했고,
+    “그럼 환경별로 어떻게 하나”는 <strong>다음 주에 직접 만든다</strong>고 하고 넘어갔습니다. <strong>오늘입니다.</strong></p>
+  </div>
+
+  <h3><span class="t">20:40 · Step 1</span>먼저 문제를 재현합니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 1 — 실행 시점에 환경변수를 넣어봅니다</span><button class="cp" type="button">복사</button></div>
+<pre>docker run --rm -p 8080:80 --name web \
+  -e VITE_API_URL=https://런타임에바뀔까.com \
+  word-app:v3</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 2 — 이미지 안의 JS를 열어봅니다</span><button class="cp" type="button">복사</button></div>
+<pre>docker exec -it web sh -c "grep -o '런타임에바뀔까' /usr/share/nginx/html/assets/*.js | head"
+docker exec -it web sh -c "grep -o '/api/words'     /usr/share/nginx/html/assets/*.js | head"</pre>
+  </div>
+  <div class="box e">
+    <span class="l">여전히 옛날 값입니다 — <code>-e</code> 는 아무 일도 하지 않았습니다</span>
+    <p>컨테이너 안에 환경변수는 <strong>분명히 들어 있습니다.</strong> <code>env</code> 를 치면 보입니다.</p>
+    <p>그런데 <strong>그걸 읽을 사람이 없습니다.</strong> <code>dist/</code> 는 <strong>이미 구워진 파일</strong>이니까요.
+    3회차에 <code>grep</code> 으로 확인한 바로 그 사실입니다.</p>
+  </div>
+
+  <h3><span class="t">Step 2</span>해법 — 빌드 시점에 넣습니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile — builder 스테이지의 RUN npm run build 앞에 추가</span><button class="cp" type="button">복사</button></div>
+<pre><span class="c"># Vite 는 import.meta.env 값을 빌드 시점에 코드로 박아 넣습니다.</span>
+<span class="c"># 따라서 이 값은 반드시 "빌드하는 동안" 존재해야 합니다.</span>
+<span class="c"># 런타임 환경변수(-e / environment:)는 무시됩니다.</span>
+<span class="good">ARG VITE_API_URL=/api</span>
+<span class="good">ENV VITE_API_URL=$VITE_API_URL</span>
+
+<span class="kw">RUN</span> npm run build</pre>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th>언제 존재하나</th><th>누가 읽나</th></tr></thead>
+      <tbody>
+        <tr><td><code>ARG</code></td><td><code>docker build</code> 동안만</td><td>Dockerfile 내부. <strong>최종 이미지에 안 남는다</strong></td></tr>
+        <tr><td><code>ENV</code></td><td>빌드 + 실행 내내</td><td>그 안에서 도는 프로세스</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="k"><code>ARG</code> 로 받은 값을 <strong><code>ENV</code> 로 옮겨야</strong>
+  <code>RUN npm run build</code> 안에서 도는 <strong>Vite 프로세스가 그 값을 봅니다.</strong></p>
+
+  <h3><span class="t">Step 3</span>같은 소스코드, 다른 이미지 두 개</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널</span><button class="cp" type="button">복사</button></div>
+<pre>docker build -t word-app:stg  --build-arg VITE_API_URL=https://stg.example.com .
+docker build -t word-app:prod --build-arg VITE_API_URL=https://api.example.com .</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">각각 확인 — 다른 주소가 박혀 있습니다</span><button class="cp" type="button">복사</button></div>
+<pre>docker run --rm word-app:stg  sh -c "grep -o 'https://stg[^\"]*' /usr/share/nginx/html/assets/*.js | head -1"
+docker run --rm word-app:prod sh -c "grep -o 'https://api[^\"]*' /usr/share/nginx/html/assets/*.js | head -1"</pre>
+  </div>
+  <div class="box w">
+    <span class="l">📸 이 결론을 남겨두세요</span>
+    <p><code>ARG</code> → <code>docker build</code> 시점 → <strong>Vite가 읽는다</strong> ✅</p>
+    <p><code>ENV</code> / <code>-e</code> → <code>docker run</code> 시점 → <strong>아무도 안 읽는다</strong> ❌</p>
+    <p><strong>내 프레임워크가 환경변수를 ‘언제’ 읽는지 알아야, 값을 ‘어느 시점’에 보낼지 정할 수 있습니다.</strong></p>
+  </div>
+  <div class="box i">
+    <span class="l">이 방식의 한계도 알아두세요 (오늘은 안 다룹니다)</span>
+    <p>환경마다 이미지를 새로 빌드해야 합니다. 즉 <strong>스테이징에서 검증한 이미지와 프로덕션 이미지가 다른 물건</strong>입니다.
+    그래서 실무에서는 <strong>런타임 설정 주입</strong>(컨테이너 시작 시 <code>config.js</code> 를 생성해 <code>window.__CONFIG__</code> 로 읽는 방식)도 씁니다.
+    <strong>선택지가 두 개라는 것</strong>만 알아두세요.</p>
+  </div>
+  <div class="ck" data-ck="s6">
+    <div class="h">✅ 체크포인트 3 — 3회차 숙제 회수 완료</div>
+    <label><input type="checkbox"><span><code>-e</code> 로는 값이 안 바뀐다는 것을 직접 확인했다</span></label>
+    <label><input type="checkbox"><span><code>--build-arg</code> 로 서로 다른 주소가 박힌 이미지 두 개를 만들었다</span></label>
+  </div>
+
+  <!-- ===== 7. compose ===== -->
+  <h2 id="s7">7. <code>docker compose</code> — 프론트 + API 한 번에</h2>
+  <p class="k">지금은 무언가를 띄우려면 <strong>터미널 두 개</strong>가 필요합니다. 서비스가 다섯 개면 다섯 개고,
+  <strong>누가 먼저 떠야 하는지 순서도 외워야</strong> 합니다. compose는 그걸 파일에 적어두고 한 줄로 실행하는 도구입니다.</p>
+
+  <div class="box w">
+    <span class="l">먼저 — Dockerfile 의 nginx 설정을 갈아끼웁니다</span>
+    <p>이제 <strong>mini-api 와 함께</strong> 띄우므로, 3회차 3단계 설정(<code>/api/</code> 리버스 프록시 포함)을 쓸 수 있습니다.
+    Dockerfile 의 그 한 줄을 바꾸세요.</p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile — COPY 한 줄만 바꿉니다</span><button class="cp" type="button">복사</button></div>
+<pre><span class="c"># 지금까지 (§2~§6)</span>
+COPY nginx-solo.conf /etc/nginx/conf.d/default.conf
+
+<span class="c"># 여기서부터 (§7~)</span>
+<span class="good">COPY nginx.conf /etc/nginx/conf.d/default.conf</span></pre>
+  </div>
+  <div class="box i">
+    <span class="l">이 파일은 어디에 만드나요 — <code>docker/</code> 폴더</span>
+    <p>아래 <code>docker-compose.yml</code> 의 <code>context: ../week4-start</code> 가 말해주듯,
+    이 파일은 <strong>앱 폴더의 형제 폴더</strong>에 둡니다. 저장소의 <code>docker/</code> 폴더에
+    <strong>완성본이 이미 들어 있습니다</strong> — 직접 만들어 보고 싶으신 분만 아래를 복사하세요.</p>
+    <p>실행은 <strong>그 폴더 안에서</strong> 합니다. <code>cd docker</code> → <code>docker compose up --build</code></p>
+  </div>
+
+  <div class="cb">
+    <div class="cb-h"><span class="f">docker/docker-compose.yml</span><button class="cp" type="button">복사</button></div>
+<pre>services:
+  <span class="st">web</span>:
+    build:
+      context: ../week4-start
+      dockerfile: Dockerfile
+      args:
+        <span class="good">VITE_API_URL: /api</span>
+    container_name: study-web
+    ports:
+      - "8080:80"
+    depends_on:
+      <span class="st">mini-api</span>:
+        <span class="good">condition: service_healthy</span>
+    restart: unless-stopped
+
+  <span class="st">mini-api</span>:
+    build:
+      context: ../mini-api
+      dockerfile: Dockerfile
+    container_name: study-mini-api
+    <span class="c"># ports 를 일부러 적지 않았습니다 (아래 설명)</span>
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://<span class="good">127.0.0.1</span>:3001/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped</pre>
+  </div>
+
+  <h3><code>nginx.conf</code> 에서 프록시 대상이 바뀝니다</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">nginx.conf — location /api/ 블록</span><button class="cp" type="button">복사</button></div>
+<pre>location /api/ {
+    <span class="c"># 3회차: http://mini-api:3001 (docker network 로 직접 연결한 컨테이너)</span>
+    <span class="c"># 지금 : http://mini-api:3001                (compose 안의 다른 서비스)</span>
+    proxy_pass <span class="good">http://mini-api:3001</span>;
+
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}</pre>
+  </div>
+  <div class="box">
+    <span class="l"><code>mini-api</code> 라는 이름은 어디서 왔나</span>
+    <p><code>docker-compose.yml</code> 의 <strong>서비스 이름</strong>입니다.
+    compose는 서비스들을 같은 가상 네트워크에 넣고, <strong>서비스 이름을 그대로 호스트 이름으로 만들어 줍니다.</strong></p>
+    <p><strong>컨테이너들끼리는 IP가 아니라 이름으로 대화합니다.</strong>
+    이 한 가지만 알아도 compose 설정 대부분을 읽을 수 있습니다.</p>
+  </div>
+
+  <h3>실행하고 확인하기</h3>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 1</span><button class="cp" type="button">복사</button></div>
+<pre>cd docker
+docker compose up --build</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 2 — 직접 확인해 보세요</span><button class="cp" type="button">복사</button></div>
+<pre>docker compose ps
+docker compose logs -f mini-api
+
+docker compose exec web ping -c 2 mini-api
+docker compose exec web wget -qO- http://mini-api:3001/api/health</pre>
+  </div>
+  <p><code>http://localhost:8080</code> → <strong>프론트도, 단어 목록도 정상. CORS 에러 없음.</strong></p>
+  <div class="box i">
+    <span class="l">🤔 <code>mini-api</code> 에 <code>ports</code> 가 없다는 점 — 이 파일의 핵심</span>
+    <p>브라우저로 <code>http://localhost:3001</code> 에 접속해 보세요. <strong>실패합니다. 고장난 게 아니라 의도한 것입니다.</strong></p>
+    <p>그런데도 <code>http://localhost:8080/api/words</code> 는 잘 됩니다. 같은 네트워크 안의 <code>web</code>(nginx)가
+    <code>mini-api</code> 라는 이름으로 접근하기 때문입니다.</p>
+    <p><strong><code>ports</code> 는 컨테이너끼리 통신하기 위한 설정이 아닙니다.
+    바깥 세상(내 컴퓨터)에 구멍을 뚫을 때만 필요합니다.</strong>
+    실무에서 DB나 내부 API를 정확히 이렇게 배치합니다 — 외부에 노출되는 입구는 nginx 하나뿐입니다.</p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">정리</span><button class="cp" type="button">복사</button></div>
+<pre>docker compose down</pre>
+  </div>
+  <div class="box">
+    <span class="l">🎉 이게 오늘 확장 파트의 결론입니다</span>
+    <p><strong>명령어 한 줄입니다. <code>docker compose up</code>.</strong>
+    이 파일을 저장소에 커밋해두면 새로 온 팀원이 첫날 이 한 줄로 전체 스택을 띄웁니다.
+    설치 문서도, “먼저 API부터 켜세요” 같은 구두 전달도 필요 없습니다.
+    <strong>환경 구성이 문서가 아니라 코드가 된 겁니다.</strong></p>
+  </div>
+
+  <h3>자주 나는 에러</h3>
+  <details>
+    <summary>dependency failed to start: container study-mini-api is unhealthy</summary>
+    <div class="body">
+      <p><strong>가장 흔한 원인 — 헬스체크가 <code>localhost</code> 를 쓰고 있습니다.</strong> 실제로 겪은 함정입니다.</p>
+      <p>Alpine 안에서 <code>localhost</code> 는 <strong>IPv6 주소 <code>::1</code> 로 먼저 해석됩니다.</strong>
+      그런데 서버는 IPv4 <code>0.0.0.0</code> 에만 바인딩하므로 <code>Connection refused</code> 가 나고
+      컨테이너가 <code>unhealthy</code> 가 됩니다.
+      <strong>서버는 멀쩡한데 헬스체크만 실패하는, 찾기 아주 어려운 종류의 버그입니다.</strong></p>
+      <div class="cb"><div class="cb-h"><span class="f">고치는 법</span></div>
+<pre><span class="bad">test: ["CMD","wget","-q","-O","-","http://localhost:3001/api/health"]</span>   <span class="bad">← ::1 로 감</span>
+<span class="good">test: ["CMD","wget","-q","-O","-","http://127.0.0.1:3001/api/health"]</span>   <span class="good">← 이렇게</span></pre></div>
+      <p><strong>진단:</strong> <code>docker compose logs mini-api</code> 로 서버 자체는 떴는지 먼저 확인하세요.
+      서버 로그는 정상인데 <code>unhealthy</code> 면 십중팔구 이것입니다.</p>
+    </div>
+  </details>
+  <details>
+    <summary>host not found in upstream "mini-api" — nginx가 시작하자마자 죽습니다</summary>
+    <div class="body">
+      <p><strong>원인:</strong> nginx는 시작할 때 <code>proxy_pass</code> 의 호스트 이름을 <strong>한 번 해석합니다.</strong>
+      그때 <code>mini-api</code> 가 없으면 nginx가 아예 시작되지 않습니다.</p>
+      <p><strong>해결:</strong></p>
+      <ul>
+        <li><code>depends_on</code> 에 <code>condition: service_healthy</code> 를 넣습니다 (위 파일에 이미 있습니다)</li>
+        <li>서비스 이름과 <code>proxy_pass</code> 의 호스트가 <strong>철자까지 같은지</strong> 확인</li>
+        <li><strong>compose 없이 <code>web</code> 컨테이너만 단독으로 띄우면 반드시 이 에러가 납니다.</strong>
+        그때는 <code>nginx.conf</code> 의 <code>location /api/</code> 블록을 잠시 주석 처리하세요</li>
+      </ul>
+      <p><strong>참고:</strong> <code>depends_on</code> 만 넣으면 “시작 순서”만 보장되고 “준비 완료”는 보장되지 않습니다.
+      그래서 <code>healthcheck</code> + <code>condition: service_healthy</code> 가 필요합니다.</p>
+    </div>
+  </details>
+  <details>
+    <summary>코드를 고쳤는데 반영이 안 됩니다 / docker-compose 명령이 없다고 나옵니다</summary>
+    <div class="body">
+      <p><strong>반영 안 됨:</strong> <code>--build</code> 없이 <code>up</code> 했습니다. → <code>docker compose up --build</code></p>
+      <p><strong>명령이 없음:</strong> <code>docker-compose</code>(하이픈)는 v1 문법입니다.
+      <strong><code>docker compose</code></strong> — 하이픈 없이 띄어쓰기로 쓰세요 (v2).</p>
+      <p><strong>컨테이너끼리 통신 안 됨:</strong> <code>localhost</code> 로 부르고 있을 가능성이 큽니다.
+      <strong>컨테이너 안의 <code>localhost</code> 는 자기 자신입니다.</strong> 서비스 이름을 쓰세요.</p>
+    </div>
+  </details>
+
+  <!-- ===== 8. CSR 확인 ===== -->
+  <h2 id="s8">8. [심화] CSR HTML 확인하기</h2>
+  <div class="box i">
+    <span class="l">여기부터는 타이핑을 많이 안 하셔도 됩니다</span>
+    <p>오늘의 결과물은 이미 여러분 노트북에 있습니다.
+    지금부터는 <strong>왜 다들 Next.js를 쓰는가</strong>를 이해하는 시간입니다.
+    <strong>단, 아래 <code>curl</code> 두 줄은 꼭 직접 쳐보세요.</strong> 오늘 심화의 문입니다.</p>
+  </div>
+  <p class="k">1회차에 “페이지 소스 보기”를 했더니 빈 <code>&lt;div id="root"&gt;</code> 만 있었죠.
+  3회차에 <code>dist/index.html</code> 을 열었더니 <strong>거기도 빈 <code>&lt;div id="root"&gt;</code></strong> 였고요.
+  오늘 그게 무슨 의미인지 확인합니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 — compose를 띄운 상태에서</span><button class="cp" type="button">복사</button></div>
+<pre>cd docker && docker compose up -d --build
+curl -s http://localhost:8080 | head -20</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">출력 — 서버가 실제로 보낸 것</span></div>
+<pre>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+  &lt;head&gt;
+    &lt;title&gt;나만의 단어장&lt;/title&gt;
+    &lt;script type="module" crossorigin src="/assets/index-C7xK9pQr.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    <span class="bad">&lt;div id="root"&gt;&lt;/div&gt;</span>          <span class="bad">← 이게 전부입니다</span>
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">단어가 몇 개나 들어 있는지 세어봅니다</span><button class="cp" type="button">복사</button></div>
+<pre>curl -s http://localhost:8080 | grep -o "serendipity" | wc -l</pre>
+  </div>
+  <div class="box e">
+    <span class="l">결과: 0</span>
+    <p><strong>단어가 하나도 없습니다.</strong> <code>curl</code> 은 JavaScript를 실행하지 않으니까요.
+    화면에는 카드가 잔뜩 보이는데 <strong>서버가 보낸 HTML에는 내용이 없습니다.</strong>
+    이것이 <strong>CSR</strong>(Client-Side Rendering)입니다.</p>
+  </div>
+  <div class="box w">
+    <span class="l">⚠️ 개발자도구 Elements 탭과 혼동하지 마세요</span>
+    <p><strong>페이지 소스 보기(<code>Cmd/Ctrl + U</code>) = 서버가 보낸 원본</strong></p>
+    <p><strong>개발자도구 Elements 탭 = JS 실행 후의 지금 화면(DOM)</strong></p>
+    <p>Elements에서는 CSR 앱에서도 내용이 보입니다. 이 둘을 구분 못 하면 아래 SSR 비교가 전부 무너집니다.</p>
+  </div>
+
+  <!-- ===== 9. SSR 비교 ===== -->
+  <h2 id="s9">9. [심화] Next.js SSR HTML과 비교하기</h2>
+  <p class="k">Next.js 완성본은 <strong>미리 드립니다.</strong> 오늘은 Next.js 문법 강의가 아니라
+  <strong>서버가 보내는 HTML이 어떻게 달라지는지</strong>를 보는 시간입니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 1 — 완성본 실행</span><button class="cp" type="button">복사</button></div>
+<pre>cd next-version      # 저장소 루트에 있습니다 (4회차 자료와 함께 공개)
+npm install
+npm run dev</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">터미널 2 — 같은 명령을 3000번 포트에</span><button class="cp" type="button">복사</button></div>
+<pre>curl -s http://localhost:3000 | grep -o "serendipity" | wc -l
+curl -s http://localhost:3000 | head -40</pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">출력</span></div>
+<pre><span class="good">11</span>      <span class="good">← 0 이 아니라는 점이 핵심입니다</span>
+
+&lt;main&gt;
+  &lt;section class="plain-list"&gt;
+    &lt;h2&gt;추천 단어&lt;/h2&gt;
+    &lt;ul&gt;
+      <span class="st">&lt;li&gt;serendipity — 뜻밖의 행운&lt;/li&gt;</span>
+      <span class="st">&lt;li&gt;ubiquitous — 어디에나 있는&lt;/li&gt;</span>
+      ...</pre>
+  </div>
+  <div class="box e">
+    <span class="l">⚠️ <code>grep -c</code> 를 쓰지 마세요</span>
+    <p>Next.js는 <strong>HTML을 한 줄로 보냅니다.</strong> <code>grep -c</code> 는 “매칭된 줄 수”를 세므로
+    <strong>항상 1이 나옵니다.</strong> 반드시 <code>grep -o "단어" | wc -l</code> 를 쓰세요.</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th>CSR (Vite)</th><th>SSR (Next.js)</th><th>SSG</th></tr></thead>
+      <tbody>
+        <tr><td><strong>HTML 만드는 시점</strong></td><td>브라우저에서</td><td>요청마다 서버에서</td><td>빌드 때 한 번</td></tr>
+        <tr><td><strong><code>curl</code> 결과</strong></td><td><strong>0</strong></td><td><strong>11</strong></td><td>내용 있음</td></tr>
+        <tr><td><strong>첫 화면 · SEO</strong></td><td>느림 · 불리</td><td>빠름 · 유리</td><td>가장 빠름 · 유리</td></tr>
+        <tr><td><strong>서버 필요?</strong></td><td><strong>아니오 (정적)</strong></td><td><strong>예 (Node 프로세스)</strong></td><td><strong>아니오 (정적)</strong></td></tr>
+        <tr><td><strong>운영 비용</strong></td><td>가장 낮음</td><td>높음</td><td>가장 낮음</td></tr>
+        <tr><td><strong>예시</strong></td><td>관리자 대시보드</td><td>커머스 상품 페이지</td><td>블로그, 문서</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box i">
+    <span class="l">새로고침해 보세요</span>
+    <p>완성본 화면 위쪽에 <strong>“이 HTML은 (시각)에 서버에서 만들어졌습니다”</strong> 가 있습니다.
+    <strong>새로고침할 때마다 시각이 바뀝니다.</strong> 요청이 올 때마다 서버가 새로 렌더한다는 증거입니다.</p>
+  </div>
+  <div class="box w">
+    <span class="l">Next.js를 쓴다고 자동으로 SSR이 아닙니다</span>
+    <p><code>'use client'</code> 안에서 <code>useEffect</code> 로 데이터를 받으면
+    <strong>Next.js에서도 <code>curl</code> 결과가 비어 있습니다.</strong>
+    프레임워크를 쓰는 것과 <strong>그 기능을 쓰는 것</strong>은 다릅니다.</p>
+  </div>
+  <div class="ck" data-ck="s9">
+    <div class="h">📸 체크포인트 4 — 스크린샷 두 장을 남기세요</div>
+    <label><input type="checkbox"><span>CSR: <code>curl ... 8080 | grep -o "serendipity" | wc -l</code> → <strong>0</strong> 을 확인했다</span></label>
+    <label><input type="checkbox"><span>SSR: <code>curl ... 3000 | grep -o "serendipity" | wc -l</code> → <strong>11</strong> 을 확인했다</span></label>
+    <label><input type="checkbox"><span>두 터미널 출력을 스크린샷으로 저장했다</span></label>
+    <label><input type="checkbox"><span>“소스 보기 = 서버가 보낸 원본 / Elements = 지금의 화면”을 구분할 수 있다</span></label>
+  </div>
+
+  <!-- ===== 10. standalone ===== -->
+  <h2 id="s10">10. [심화] <code>standalone</code> 으로 Next.js 배포하기</h2>
+  <div class="box i">
+    <span class="l">이 섹션은 강사 데모입니다 — 파일은 전부 드립니다</span>
+    <p>따라 치지 않으셔도 됩니다. <strong>“무엇이 달라지는가”</strong>만 보세요.</p>
+  </div>
+  <p class="k">3회차까지 배포한 것은 <strong>파일</strong>이었습니다. 지금 배포하는 것은 <strong>프로세스</strong>입니다.
+  이게 결정적인 차이입니다.</p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">next.config.js — 이 한 줄이 전부입니다</span><button class="cp" type="button">복사</button></div>
+<pre><span class="c">/** @type {import('next').NextConfig} */</span>
+<span class="kw">const</span> nextConfig = {
+  <span class="good">output: 'standalone'</span>,
+  reactStrictMode: <span class="kw">true</span>,
+};
+
+module.exports = nextConfig;</pre>
+  </div>
+  <div class="box">
+    <span class="l">standalone 이 하는 일</span>
+    <p>“이 앱을 <strong>실제로 돌리는 데 필요한 것만</strong> 골라서 한 폴더에 모아라”는 옵션입니다.
+    <code>node_modules</code> 전체(수백 MB)가 아니라 <strong>실제로 import되는 것만</strong> 추려서 담습니다.</p>
+    <p>그리고 <code>.next/standalone/server.js</code> 라는 <strong>실행 파일이 하나 생깁니다. 이게 우리의 웹서버입니다.</strong></p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">Dockerfile — runner 스테이지 (마지막이 nginx가 아니라 node 입니다)</span><button class="cp" type="button">복사</button></div>
+<pre><span class="kw">FROM</span> node:20-alpine <span class="good">AS runner</span>
+<span class="kw">WORKDIR</span> /app
+<span class="kw">ENV</span> NODE_ENV=production
+
+<span class="c"># standalone 은 "실행에 필요한 것"만 담습니다.</span>
+<span class="c"># public/ 과 .next/static 은 포함되지 않아 반드시 따로 복사해야 합니다.</span>
+<span class="kw">COPY</span> --from=builder /app/public ./public
+<span class="kw">COPY</span> --from=builder /app/.next/standalone ./
+<span class="good">COPY --from=builder /app/.next/static ./.next/static</span>
+
+<span class="kw">ENV</span> PORT=3000
+<span class="good">ENV HOSTNAME=0.0.0.0</span>
+<span class="kw">EXPOSE</span> 3000
+
+<span class="good">CMD ["node", "server.js"]</span>   <span class="c">← next start 가 아닙니다</span></pre>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">docker/docker-compose.next.yml — 저장소에 완성본이 있습니다</span><button class="cp" type="button">복사</button></div>
+<pre>services:
+  next:
+    build: ./next-version
+    <span class="good">expose:
+      - "3000"</span>          <span class="c"># 바깥에 직접 열지 않습니다. nginx 를 통해서만</span>
+
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - next</pre>
+  </div>
+  <div class="box i">
+    <span class="l"><code>gateway.nginx.conf</code> 도 저장소에 있습니다</span>
+    <p><code>docker/gateway.nginx.conf</code> — 열어보면 <code>location /_next/static/</code> 에
+    1년 캐시 헤더가 붙어 있습니다. <strong>3회차의 <code>/assets/</code> 캐시 헤더와 똑같은 논리</strong>입니다
+    (해시가 붙은 파일이니 영구 캐시해도 안전).</p>
+    <p>차이는 <code>root</code> 가 없다는 것입니다. 파일을 주는 게 아니라
+    <code>proxy_pass http://next_app</code> 으로 <strong>전부 넘깁니다.</strong></p>
+  </div>
+  <div class="cb">
+    <div class="cb-h"><span class="f">확인</span><button class="cp" type="button">복사</button></div>
+<pre>docker compose up --build
+curl -s http://localhost | grep -o "serendipity" | wc -l</pre>
+  </div>
+  <div class="box">
+    <span class="l">nginx의 역할이 바뀌었습니다</span>
+    <p>nginx는 이제 <strong>파일을 주는 역할이 아니라 문지기</strong>입니다 —
+    HTTPS 종료, 압축, 캐시 헤더, 정적 자산 처리, 그리고 <strong>Node 프로세스를 바깥에 직접 노출하지 않기.</strong></p>
+    <p>3회차의 nginx 지식이 버려진 게 아니라 <strong>역할이 바뀌어 계속 쓰입니다.</strong></p>
+  </div>
+
+  <h3>자주 나는 에러</h3>
+  <details>
+    <summary>standalone 인데 CSS가 전부 깨집니다 / 이미지가 404 입니다</summary>
+    <div class="body">
+      <p><strong>오늘 Next.js 파트에서 가장 흔한 사고입니다.</strong></p>
+      <p><code>.next/standalone</code> 폴더는 <strong>“서버 실행에 필요한 것”만</strong> 담습니다.
+      해시가 붙은 JS·CSS 청크(<code>.next/static</code>)와 <code>public/</code> 은 <strong>포함되지 않습니다.</strong>
+      그래서 Dockerfile에서 <strong>수동으로 복사</strong>해야 합니다.</p>
+      <div class="cb"><div class="cb-h"><span class="f">이 두 줄이 없으면 깨집니다</span><button class="cp" type="button">복사</button></div>
+<pre>COPY --from=builder /app/.next/static ./.next/static   <span class="good">← 빠뜨리면 CSS·JS 깨짐</span>
+COPY --from=builder /app/public ./public               <span class="good">← 빠뜨리면 이미지 404</span></pre></div>
+      <p><strong>증상 구분:</strong> 페이지 자체는 뜨는데 스타일만 없다 → <code>static</code> 미복사.
+      특정 이미지만 404 → <code>public</code> 미복사.</p>
+    </div>
+  </details>
+  <details>
+    <summary>"/app/.next/standalone": not found</summary>
+    <div class="body">
+      <p><strong>원인:</strong> <code>next.config.js</code> 에 <code>output: 'standalone'</code> 이 없습니다.
+      그러면 그 폴더 자체가 생성되지 않습니다. <strong>4회차 실수 1위입니다.</strong></p>
+      <p><strong>해결:</strong> 설정을 추가하고 <strong>다시 빌드</strong>한 뒤, <code>ls .next/standalone</code> 으로 폴더가 생겼는지 확인하세요.</p>
+    </div>
+  </details>
+  <details>
+    <summary><code>-p</code> 로 포트를 뚫었는데 접속이 안 됩니다</summary>
+    <div class="body">
+      <p><strong>원인:</strong> 앱이 컨테이너 안에서 <code>127.0.0.1</code> 에만 바인딩하고 있습니다.
+      그러면 컨테이너 <strong>바깥</strong>에서 오는 연결을 아예 받지 못합니다.</p>
+      <div class="cb"><div class="cb-h"><span class="f">고치는 법</span></div>
+<pre><span class="good">ENV HOSTNAME=0.0.0.0</span>              <span class="c">Next.js standalone</span>
+<span class="good">--host 0.0.0.0</span>                     <span class="c">Vite preview 등</span></pre></div>
+      <p>포트를 아무리 뚫어도 <strong>앱이 안 듣고 있으면 소용없습니다.</strong> 매년 나오는 사고입니다.</p>
+    </div>
+  </details>
+  <details>
+    <summary>platform mismatch / exec format error (M1·M2 맥)</summary>
+    <div class="body">
+      <p><strong>증상:</strong> <code>The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8)</code>
+      또는 실행하자마자 <code>exec format error</code>.</p>
+      <p><strong>원인:</strong> Apple Silicon(arm64)에서 만든 이미지를 x86 서버에 올렸거나, 그 반대입니다.
+      CPU 명령어 세트가 달라서 그대로는 못 돕니다.</p>
+      <div class="cb"><div class="cb-h"><span class="f">해결 — 배포 대상 아키텍처를 명시해서 빌드</span><button class="cp" type="button">복사</button></div>
+<pre><span class="c"># 서버가 x86(대부분의 클라우드)인 경우</span>
+docker build --platform linux/amd64 -t word-app:v3 .
+
+<span class="c"># 실행할 때만 임시로 맞추기 (느립니다 — 에뮬레이션)</span>
+docker run --platform linux/amd64 --rm -p 8080:80 word-app:v3</pre></div>
+      <p><strong>수업 중에는</strong> 내 노트북에서만 돌리므로 신경 쓰지 않아도 됩니다.
+      <strong>실제 서버에 올릴 때</strong> 반드시 기억해야 하는 항목입니다.</p>
+    </div>
+  </details>
+  <details>
+    <summary>디스크가 꽉 찼습니다 (no space left on device)</summary>
+    <div class="body">
+      <p>오늘 이미지를 여러 개 만들었으니 그럴 수 있습니다. 먼저 얼마나 먹었는지 확인하세요.</p>
+      <div class="cb"><div class="cb-h"><span class="f">확인 후 정리</span><button class="cp" type="button">복사</button></div>
+<pre>docker system df           <span class="c"># 얼마나 먹었나</span>
+docker system prune         <span class="c"># 안 쓰는 컨테이너·네트워크·캐시 정리</span>
+docker system prune -a      <span class="c"># 이미지까지 전부 (주의: 다시 받아야 함)</span></pre></div>
+      <p><strong><code>-a</code> 는 주의하세요.</strong> <code>node:20-alpine</code>, <code>nginx:alpine</code> 도 지워지고
+      다시 받아야 합니다. 수업 중에는 <code>-a</code> 없이 먼저 시도하세요.</p>
+    </div>
+  </details>
+
+  <!-- ===== 11. 로드맵 ===== -->
+  <h2 id="s11">11. 수료 후 로드맵</h2>
+  <div class="box">
+    <span class="l">오늘로 4주가 끝났지만, 여기서 끊지 마세요</span>
+    <p>이 스터디에서 다룬 건 <strong>넓게 한 번 관통한 것</strong>입니다.
+    각 지점을 <strong>깊게 파는 자료</strong>를 따로 준비해뒀습니다. 브라우저로 HTML을 열면 바로 봅니다.</p>
+    <p><strong>아래 두 묶음은 이 저장소에 없습니다.</strong> 실제 프로덕션 사례가 들어 있어
+    공개 저장소에 올리지 않고, <strong>수료자에게 스터디 채널로 따로 전달</strong>합니다.
+    지금은 어떤 자료가 있는지와 읽는 순서만 보시면 됩니다.</p>
+  </div>
+
+  <h3><span class="t">심화 자료 · 수료 후 별도 배포</span>20개 덱 — <code>index.html</code> 이 목차입니다</h3>
+  <p class="k">실제 프로덕션 시스템(실시간 통번역 플랫폼)에서 나온 사례로 만든 자료입니다.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>순서</th><th>덱</th><th>왜 지금인가</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>#4 Docker &amp; Deploy for Frontend Engineers</strong><br><code>04-docker-deploy-for-frontend.html</code></td><td><strong>오늘의 직접 확장.</strong> 오늘 못 다룬 CI/CD, 롤백, 헬스체크</td></tr>
+        <tr><td>2</td><td><strong>#13 Secrets, Tokens &amp; Keys</strong><br><code>13-secrets-tokens-keys.html</code></td><td>3회차 <code>VITE_</code> 규칙의 완전판. 무엇을 어디에 두는가</td></tr>
+        <tr><td>3</td><td><strong>#3 Caching Mental Models</strong><br><code>03-caching-mental-models.html</code></td><td>3회차 캐시 헤더의 전체 그림. 브라우저↔CDN↔서버</td></tr>
+        <tr><td>4</td><td><strong>#11 Observability &amp; Latency Debugging</strong><br><code>11-observability-latency-debugging.html</code></td><td>오늘 “누가 서버를 감시하나” 질문의 답</td></tr>
+        <tr><td>5</td><td><strong>#9 Anatomy of Latency</strong><br><code>09-anatomy-of-latency.html</code></td><td>SSR/CSR 성능 논의를 <strong>숫자로</strong> 하는 법</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="k">React를 더 파고 싶다면 — <code>01-state-decision-map.html</code>(2회차 상태 설계 확장판) ·
+  <code>08-invisible-react-bugs.html</code>(리렌더·경쟁 상태·스테일 클로저) ·
+  <code>18-tanstack-query-beyond-usequery.html</code>(커스텀 훅 다음 단계) ·
+  <code>16-feature-sliced-design.html</code>(프로젝트가 커졌을 때의 구조).</p>
+  <div class="box i">
+    <span class="l">권장 경로</span>
+    <p><strong>입문자용:</strong> #1 → #3 → #4 &nbsp;<span style="color:var(--fg-muted)">(오늘 것부터 다지기)</span></p>
+    <p><strong>경험자용:</strong> #4 → #13 → #11 → #9</p>
+  </div>
+
+  <h3><span class="t">심화 자료 · 수료 후 별도 배포</span>버그 헌트 6개 — 실제 커밋에서 뽑은 랩</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>파일</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td><code>01-race-conditions.md</code></td><td>경쟁 상태 — 2회차 fetch·로딩 처리의 다음 단계</td></tr>
+        <tr><td><code>02-streaming-ux.md</code></td><td>스트리밍 UX — 응답이 조금씩 오는 화면 다루기</td></tr>
+        <tr><td><code>03-auth-security.md</code></td><td>인증·보안 — 토큰을 어디에 두는가</td></tr>
+        <tr><td><code>04-state-and-caching.md</code></td><td>상태와 캐싱 — 2회차 상태 설계의 실전판</td></tr>
+        <tr><td><code>05-async-backend.md</code></td><td>비동기 백엔드 — 프론트가 알아야 할 뒷단</td></tr>
+        <tr><td><strong><code>06-infra-cicd.md</code></strong></td><td><strong>오늘과 3회차의 실무 사례 원본.</strong> 오늘 들은 이야기의 실제 코드와 diff가 그대로 들어 있습니다</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>혼자 해볼 것 세 가지 (난이도 순)</h3>
+  <ol>
+    <li><strong>HTTPS 붙이기</strong> — Let's Encrypt + certbot으로 오늘 만든 nginx에 인증서 붙이기.
+    “Vercel이 자동으로 해주던 것” 중 하나를 손으로 해보는 것입니다</li>
+    <li><strong>GitHub Actions로 이미지 빌드 자동화</strong> — push하면 이미지가 만들어지는 것까지</li>
+    <li><strong>Next.js로 같은 앱 다시 만들기</strong> — 오늘 완성본으로 본 것을 직접.
+    <code>curl</code> 로 SSR을 확인하는 것까지</li>
+  </ol>
+
+  <h3>과제 대신 — <code>DEPLOY.md</code> 한 장 (선택이지만 강력 추천)</h3>
+  <p class="k">각자 저장소에 <code>DEPLOY.md</code> 를 한 장 쓰는 걸 권합니다.
+  <strong>포트폴리오에서 이 문서가 코드보다 강합니다.</strong></p>
+  <div class="cb">
+    <div class="cb-h"><span class="f">DEPLOY.md — 이 뼈대만 채우면 됩니다</span><button class="cp" type="button">복사</button></div>
+<pre># 나만의 단어장 — 배포
+
+## 로컬 실행
+docker compose up --build   # http://localhost:8080
+
+## 구조
+- web: Vite 빌드 → nginx (멀티스테이지, 약 92MB)
+- mini-api: Node 20 미니 API (포트 3001, 외부 미노출)
+
+## 왜 이렇게 했나
+- API 주소는 build arg 로 주입 — VITE_* 는 빌드 시점에 코드로 박히기 때문
+- SPA fallback (try_files) — 클라이언트 라우트 새로고침 시 404 방지
+- /api 는 nginx 리버스 프록시 — 같은 출처가 되어 CORS 미발생
+- 멀티스테이지 — 최종 이미지에 Node·node_modules·소스코드를 남기지 않음
+
+## 이 프로젝트에 Next.js를 쓰지 않은 이유
+(판단 기준표로 각자 작성)</pre>
+  </div>
+  <div class="box w">
+    <span class="l">마지막 항목이 핵심입니다</span>
+    <p><strong>“기술 선택의 이유를 쓸 수 있는 것”</strong> 이 이 스터디가 남기려는 능력입니다.
+    <strong>면접에서 정확히 이걸 묻습니다.</strong></p>
+  </div>
+
+  <h3>각자 답할 수 있게 된 질문들</h3>
+  <ul>
+    <li><code>npm run build</code> 는 무엇을 만드나?</li>
+    <li>왜 <code>.env</code> 를 바꾸면 다시 빌드해야 하나?</li>
+    <li>배포 후 새로고침하면 왜 404가 뜨나?</li>
+    <li>CORS 에러를 백엔드 없이 없앨 수 있나?</li>
+    <li>이미지와 컨테이너는 뭐가 다른가?</li>
+    <li>왜 다들 Next.js를 쓰나? 나는 써야 하나?</li>
+    <li><strong>Vercel은 나 대신 무엇을 해주고 있었나?</strong></li>
+  </ul>
+  <p class="k">4주 전에 이 질문들을 받았으면 몇 개나 답하셨을까요. <strong>오늘은 다 답하실 수 있습니다.</strong></p>
+
+  <!-- ===== 마무리 ===== -->
+  <div class="done">
+    <h3>🎉 4회차 완료 — 그리고 4주 수료</h3>
+    <p><strong>프론트엔드는 화면에서 끝나지 않습니다.</strong></p>
+    <p>그 화면이 사용자에게 도달하는 <strong>전 구간</strong>이 여러분의 일입니다.</p>
+    <p style="color:var(--fg-muted);font-size:.92rem">
+      그 구간을 아는 사람은, <strong>남이 만들어둔 버튼이 없는 곳에서도 배포할 수 있습니다.</strong><br>
+      4주 동안 고생 많으셨습니다.</p>
+  </div>
+
+  <footer>
+    branch/FE · 4회차 따라하기 · 마지막 회차 · 막히면 언제든 손을 들어주세요.
+    체크박스 진도는 이 브라우저에만 저장되며, 상단 “진도 초기화”로 지울 수 있습니다.
+  </footer>
+</div>
+
+<script>
+(function(){
+  /* ---- 코드 복사 ---- */
+  document.querySelectorAll('.cp').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.closest('.cb').querySelector('pre');
+      var text=pre.innerText.replace(/[ \t]*←.*$/gm,'').replace(/\s+$/,'');
+      navigator.clipboard.writeText(text).then(function(){
+        var old=btn.textContent; btn.textContent='복사됨'; btn.classList.add('ok');
+        setTimeout(function(){btn.textContent=old;btn.classList.remove('ok')},1400);
+      }).catch(function(){ btn.textContent='복사 실패'; });
+    });
+  });
+
+  /* ---- 진도 저장 ---- */
+  var KEY='branchfe-w4-progress';
+  var boxes=[].slice.call(document.querySelectorAll('.ck input[type=checkbox]'));
+  boxes.forEach(function(b,idx){ b.dataset.i=idx; });
+  var pf=document.getElementById('pf'),pd=document.getElementById('pd'),pt=document.getElementById('pt');
+  pt.textContent=boxes.length;
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(boxes.map(function(b){return b.checked?1:0}))); }catch(e){}
+  }
+  function paint(){
+    var n=boxes.filter(function(b){return b.checked}).length;
+    pd.textContent=n; pf.style.width=(boxes.length?n/boxes.length*100:0)+'%';
+  }
+  try{
+    var saved=JSON.parse(localStorage.getItem(KEY)||'[]');
+    boxes.forEach(function(b,i){ if(saved[i]) b.checked=true; });
+  }catch(e){}
+  paint();
+  boxes.forEach(function(b){ b.addEventListener('change',function(){save();paint()}); });
+
+  document.getElementById('rs').addEventListener('click',function(){
+    boxes.forEach(function(b){b.checked=false}); save(); paint();
+  });
+
+  /* ---- 테마 ---- */
+  document.getElementById('tb').addEventListener('click',function(){
+    var c=document.documentElement.getAttribute('data-theme');
+    if(!c)c=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+    document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');
+  });
+})();
+</script>
+</body>
+</html>

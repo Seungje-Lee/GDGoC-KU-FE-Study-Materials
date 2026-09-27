@@ -44,9 +44,9 @@
 | `next-version/` | 4회차 결과물을 **Next.js로 옮긴 버전**. 같은 화면이 서버에서 만들어지면 무엇이 달라지는지 비교용으로 씁니다. | 4회차 후반 |
 | `mini-api/` | 단어 데이터를 주는 **미니 API 서버** (강사 제공, 의존성 0개). 2회차부터 앱과 함께 켜둡니다 — `node server.js` 한 줄이면 됩니다. | 2회차부터 |
 | `nginx/` | 3회차에 쓰는 **nginx 설정 파일 3종** (`nginx.conf` → `nginx-spa.conf` → `nginx-proxy.conf`). 단계별로 하나씩 얹습니다. | 3회차 |
-| `docker/` | 4회차에 쓰는 **`docker-compose.yml`**. 앱 컨테이너와 미니 API 컨테이너를 한 번에 띄웁니다. | 4회차 |
+| `docker/` | 4회차에 쓰는 **compose 파일 모음**. `docker-compose.yml`(앱+미니 API), `docker-compose.next.yml`(Next.js+게이트웨이), `gateway.nginx.conf`. | 4회차 |
 
-> **폴더는 해당 회차에 맞춰 하나씩 공개됩니다.** 지금은 `week0-end/`, `week1-start/`, `week2-start/`, `week3-start/`, `week4-start/`, `mini-api/`, `nginx/` 가 올라와 있습니다.
+> **폴더는 해당 회차에 맞춰 하나씩 공개됩니다.** 4회차까지 전부 공개되었습니다 — `week0-end/` ~ `week4-start/`, `next-version/`, `mini-api/`, `nginx/`, `docker/`.
 > `week4-start/` 는 **3회차의 정답지**를 겸합니다 — 실습 중 막히면 거기서 해당 파일을 꺼내 보세요.
 > 위 표는 4주 전체 지도라고 보시면 됩니다.
 

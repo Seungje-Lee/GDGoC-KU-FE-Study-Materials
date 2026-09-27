@@ -1,0 +1,16 @@
+{
+  "name": "my-vocab-next",
+  "version": "1.0.0",
+  "private": true,
+  "description": "프론트엔드 스터디 4회차 - 나만의 단어장 Next.js(SSR) 완성본",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

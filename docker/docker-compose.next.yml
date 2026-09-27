@@ -1,0 +1,17 @@
+# §10 — Next.js 를 nginx 뒤에 두는 compose
+# 실행:  cd docker && docker compose -f docker-compose.next.yml up --build
+# 확인:  curl -s http://localhost | grep -o "serendipity" | wc -l
+services:
+  next:
+    build: ../next-version
+    expose:
+      - "3000"          # 바깥에 직접 열지 않습니다. nginx 를 통해서만
+
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - next
