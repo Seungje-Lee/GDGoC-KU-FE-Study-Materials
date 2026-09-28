@@ -1,41 +1,33 @@
 # ==================================================================
-# 4회차 · 멀티스테이지 빌드 — Vite 앱 배포용 (실무에서 쓰는 형태)
+# 4회차 정답지 — 멀티스테이지 빌드
 # ==================================================================
-# Dockerfile.simple 은 "내가 만든 dist 를 넣기만" 했습니다.
-# 여기서는 빌드까지 컨테이너 안에서 합니다. 누가 어디서 빌드해도 결과가 같습니다.
+# [이 파일이 하는 일 — 한 문장]
+#   "소스코드만 주면, 빌드까지 알아서 해서 배포 가능한 상태로 만든다."
 #
-# [멀티스테이지가 뭔가요]
-#   FROM 을 두 번 씁니다. 각 FROM 부터가 하나의 "스테이지" 입니다.
+#   3회차까지는 내가 npm run build 를 하고 그 dist/ 를 이미지에 넣었습니다.
+#   그러면 결과물이 "내 Node 버전, 내 node_modules" 에 의존합니다.
+#   팀원과 빌드 결과가 달라지고, 어제 dist 가 그대로 배포되는 사고가 납니다.
 #
-#     1단계 builder : node 이미지에서 npm ci && npm run build 를 돌린다
-#     2단계 runtime : nginx 이미지에 1단계 결과물(dist)만 꺼내 온다
+# [이미 아는 이야기입니다]
+#   Vercel 에 push 하면 Vercel 서버가 npm ci && npm run build 를 돌립니다.
+#   내 dist/ 를 올리는 게 아닙니다. GitHub Actions 도 같습니다.
+#   이 파일이 하는 일이 정확히 그것입니다.
 #
-#   최종 이미지에는 마지막 스테이지만 남습니다.
-#   node_modules, 소스코드, npm 캐시는 1단계에 남아 최종 이미지에 들어가지 않습니다.
-#   → 이미지가 1GB 대에서 50MB 안팎으로 줄어듭니다.
-#     (docker images 로 직접 비교해 보세요)
-#
-# [사전 준비]
-#   이 파일(Dockerfile)과 nginx.conf 는 이미 앱 루트에 복사되어 있습니다.
-#   docker build 는 "빌드 컨텍스트(= 마지막 인자로 준 폴더)" 밖의 파일을
-#   COPY 할 수 없기 때문에, 필요한 파일은 전부 앱 루트에 있어야 합니다.
-#   (원본은 저장소의 nginx/nginx-proxy.conf 입니다)
-#
-#   package-lock.json 은 시작 코드에 이미 들어 있으므로 아래 npm ci 가 바로 동작합니다.
+# [새로 외울 줄은 두 개뿐입니다]
+#   FROM ... AS builder          1단계에 이름을 붙인다
+#   COPY --from=builder ...      1단계가 만든 dist/ 만 꺼내온다
+#   나머지(npm ci, npm run build)는 3회차에 터미널에서 치던 그것입니다.
 #
 # 빌드:  docker build -t my-vocab .
 # 실행:  docker run --rm -p 8080:80 --name my-vocab my-vocab
+# 환경별 빌드:  docker build --build-arg VITE_API_URL=/api -t my-vocab .
 #
-# 빌드타임 환경변수를 넣고 싶다면:
-#   docker build --build-arg VITE_API_URL=/api -t my-vocab .
-#
-# ⚠️ 단독 실행 주의
-#   아래에서 복사하는 nginx.conf 는 /api/ 요청을 'mini-api' 호스트로 넘깁니다.
-#   'mini-api' 는 docker compose 의 서비스 이름이라서,
-#   compose 없이 이 컨테이너만 띄우면 nginx 가 그 이름을 찾지 못하고 바로 죽습니다.
-#     host not found in upstream "mini-api"
-#   compose 로 함께 띄우거나, nginx.conf 의 location /api/ 블록을
-#   잠시 주석 처리하고 실행하세요. (자세한 내용은 README 참고)
+# ⚠️ nginx 설정 두 개 — 단독 실행이면 nginx-solo.conf
+#   아래는 nginx.conf(3회차 3단계)를 복사합니다. 이 설정은 /api/ 를
+#   'mini-api' 로 넘기는데, 그건 docker compose 의 서비스 이름이라
+#   compose 없이 이 컨테이너만 띄우면 nginx 가 즉사합니다.
+#       nginx: [emerg] host not found in upstream "mini-api"
+#   컨테이너 하나만 띄울 때는 COPY 대상을 nginx-solo.conf 로 바꾸세요.
 # ==================================================================
 
 
